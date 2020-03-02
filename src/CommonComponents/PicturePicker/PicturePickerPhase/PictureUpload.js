@@ -89,7 +89,7 @@ class PictureUpload extends React.Component {
           id="file"
           accept="image/*"
           className={classes.hiddenInput}
-          onChange={onChange}
+          onChange={this.onChange}
         />
 
         <Collapse in={this.state.uploadReady}>
