@@ -41,7 +41,16 @@ import {
   UPLOAD_PICTURE
 } from "../constants.js";
 
-const styles = theme => ({});
+const styles = theme => ({
+  hiddenInput: {
+    width: "0.1px",
+    height: "0.1px",
+    opacity: 0,
+    overflow: "hidden",
+    position: "absolute",
+    "z-index": -1
+  }
+});
 
 /**Der PicturePicker soll eine Common Component werden,
  * die Standartmäßig für das auswählen der bilder benutzt werden
@@ -88,7 +97,7 @@ class PictureUpload extends React.Component {
           name="file"
           id="file"
           accept="image/*"
-          className={classes.hiddenInput}
+          className={this.props.classes.hiddenInput}
           onChange={this.onChange}
         />
 

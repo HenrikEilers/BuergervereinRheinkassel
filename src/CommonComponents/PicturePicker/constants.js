@@ -6,6 +6,7 @@ const GROUP_EDIT = 3; //Welche Gruppe soll verändert werden
 const NEW_GROUP = 4; // Phase in der neue Gruppe erstellt wird
 const CHANGE_GROUP = 5; //Phase in der Gruppen verändert werden
 const UPLOAD_PICTURE = 6; // Uplaod Phase
+const DELETE_GROUP = 7;
 
 export {
   PICTURE_PICK,
@@ -14,5 +15,6 @@ export {
   GROUP_EDIT,
   NEW_GROUP,
   CHANGE_GROUP,
-  UPLOAD_PICTURE
+  UPLOAD_PICTURE,
+  DELETE_GROUP
 };
