@@ -1,2 +1,0 @@
-# BuergervereinRheinkassel
-Created with CodeSandbox

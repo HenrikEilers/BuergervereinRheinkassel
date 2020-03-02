@@ -1,0 +1,35 @@
+.App {
+  /**font-family: "Karla", sans-serif;*/
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.wrapper {
+  padding: 10% 0%;
+}
+
+.marker1 {
+  border-color: red;
+  border-style: solid;
+}
+.marker2 {
+  border-color: yellow;
+  border-style: solid;
+}
+.marker3 {
+  border-color: rgb(55, 0, 255);
+  border-style: solid;
+}
+.gridbox1 {
+  height: 100px;
+  border-color: yellow;
+  border-style: solid;
+}
+.gridbox2 {
+  height: 200px;
+  border-color: rgb(55, 0, 255);
+  border-style: solid;
+}
+.App {
+  text-align: center;
+}
