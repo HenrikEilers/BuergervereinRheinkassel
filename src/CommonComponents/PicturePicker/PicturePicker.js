@@ -33,6 +33,7 @@ import PictureUpload from "./PicturePickerPhase/PictureUpload.js";
 import PictureGroupOnEdit from "./PicturePickerPhase/PictureGroupOnEdit.js";
 import PictureGroupDate from "./PicturePickerPhase/PictureGroupDate.js";
 import PictureGroupDelete from "./PicturePickerPhase/PictureGroupDelete.js";
+import PictureUploadGroupSelect from "./PicturePickerPhase/PictureUploadGroupSelect.js";
 
 import React from "react";
 import {
@@ -43,7 +44,8 @@ import {
   NEW_GROUP,
   CHANGE_GROUP,
   DELETE_GROUP,
-  UPLOAD_PICTURE
+  UPLOAD_PICTURE,
+  UPLOAD_GROUP_SELECT
 } from "./constants.js";
 
 const styles = theme => ({});
@@ -72,7 +74,8 @@ class PicturePicker extends React.Component {
         uploadWidth: -1,
         uploadHeight: -1,
         pictureDate: new Date()
-      }
+      },
+      uploadGroups: []
     };
   }
 
@@ -168,15 +171,30 @@ class PicturePicker extends React.Component {
         return (
           <React.Fragment>
             <PictureUpload
+              uploadGroups={this.state.uploadGroups}
               picture={this.state.uploadPicture}
-              setPicture={picture => {
-                this.setState({ uploadPicture: picture });
+              setPicture={(picture, uploadGroups) => {
+                this.setState({ uploadPicture: picture, uploadGroups });
               }}
               user={this.props.user}
               changePhase={this.changePhase}
             />
           </React.Fragment>
         );
+      case UPLOAD_GROUP_SELECT:
+        return (
+          <React.Fragment>
+            <PictureUploadGroupSelect
+              uploadGroups={this.state.uploadGroups}
+              setUploadGroups={uploadGroups => {
+                this.setState({ uploadGroups });
+              }}
+              user={this.props.user}
+              changePhase={this.changePhase}
+            />
+          </React.Fragment>
+        );
+
       default:
         break;
     }

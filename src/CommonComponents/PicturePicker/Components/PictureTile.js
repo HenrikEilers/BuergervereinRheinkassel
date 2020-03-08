@@ -58,7 +58,10 @@ class PictureTile extends React.Component {
           }}
         >
           <Typography
-            style={{ color: this.props.choosen === true ? "white" : "black" }}
+            style={{
+              wordBreak: "break-all",
+              color: this.props.choosen === true ? "white" : "black"
+            }}
             variant="h5"
           >
             {picture.name}
@@ -68,7 +71,8 @@ class PictureTile extends React.Component {
               <img
                 style={{
                   verticalAlign: "middle",
-                  overflow: "hidden"
+                  overflow: "hidden",
+                  width: "100%"
                 }}
                 width="100%"
                 height="auto"

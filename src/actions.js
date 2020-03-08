@@ -56,6 +56,7 @@ export const postUploadPicture = (
   uploadWidth,
   uploadHeight,
   date,
+  uploadGroups,
   callback,
   progress
 ) => {
@@ -70,6 +71,7 @@ export const postUploadPicture = (
   formData.append("uploadWidth", uploadWidth);
   formData.append("uploadHeight", uploadHeight);
   formData.append("date", date);
+  formData.append("uploadGroups", JSON.stringify(uploadGroups));
 
   axios
     .post(

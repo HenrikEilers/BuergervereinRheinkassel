@@ -14,7 +14,8 @@ import {
   CircularProgress,
   InputAdornment,
   Card,
-  LinearProgress
+  LinearProgress,
+  Paper
 } from "@material-ui/core";
 
 import Search from "@material-ui/icons/Search";
@@ -66,11 +67,16 @@ const styles = theme => ({
 class PictureUpload extends React.Component {
   constructor(props) {
     super(props);
+    console.log(props.uploadGroups.length);
     this.state = {
       uploadReady: false,
       progress: -1,
       changeDate: false,
-      picture: props.picture
+      picture: props.picture,
+      nameError: !/^[\w-]*$/.test(props.picture.uploadName),
+      success: false,
+      uploadError: false,
+      uploadErrorText: ""
     };
   }
 
@@ -99,6 +105,13 @@ class PictureUpload extends React.Component {
                   pictureDate: eventDate
                 }
               });
+              this.props.setPicture(
+                {
+                  ...this.state.picture,
+                  pictureDate: eventDate
+                },
+                this.props.uploadGroups
+              );
             }}
             KeyboardButtonProps={{
               "aria-label": "change date"
@@ -127,9 +140,10 @@ class PictureUpload extends React.Component {
             pictureDate: date
           };
           this.setState({
-            picture
+            picture,
+            nameError: !/^[\w-]*$/.test(picture.uploadName)
           });
-          this.props.setPicture(picture);
+          this.props.setPicture(picture, this.props.uploadGroups);
         };
         img.src = e.target.result;
       };
@@ -143,7 +157,7 @@ class PictureUpload extends React.Component {
       uploadErrorText: ""
     });
     postUploadPicture(
-      this.props.picture.user,
+      this.props.user,
       this.state.picture.uploadFile,
       this.state.picture.uploadName,
       this.state.picture.uploadType,
@@ -151,7 +165,9 @@ class PictureUpload extends React.Component {
       this.state.picture.uploadWidth,
       this.state.picture.uploadHeight,
       this.state.picture.pictureDate.toISOString().substring(0, 10),
+      this.props.uploadGroups,
       response => {
+        console.log(response);
         if (response.data.success) {
           this.setState({
             success: true
@@ -177,15 +193,18 @@ class PictureUpload extends React.Component {
           style={{ width: "100%", padding: 10 }}
           variant="outlined"
           onClick={() => {
-            this.props.setPicture({
-              uploadName: "",
-              uploadType: "",
-              uploadFile: null,
-              uploadImageSrc: "",
-              uploadWidth: -1,
-              uploadHeight: -1,
-              pictureDate: new Date()
-            });
+            this.props.setPicture(
+              {
+                uploadName: "",
+                uploadType: "",
+                uploadFile: null,
+                uploadImageSrc: "",
+                uploadWidth: -1,
+                uploadHeight: -1,
+                pictureDate: new Date()
+              },
+              []
+            );
             this.props.changePhase(PICTURE_PICK);
           }}
         >
@@ -205,6 +224,7 @@ class PictureUpload extends React.Component {
           <Collapse in={this.state.uploadReady}>
             <div style={{ marginBottom: 7 }}>
               <TextField
+                error={this.state.nameError}
                 style={{ marginBottom: "7px" }}
                 variant="outlined"
                 fullWidth
@@ -212,16 +232,31 @@ class PictureUpload extends React.Component {
                 value={this.state.picture.uploadName}
                 onChange={event => {
                   const regex = /^[\w-]*$/;
-                  if (regex.test(event.target.value)) {
-                    this.setState({
-                      picture: {
-                        ...this.state.picture,
-                        uploadName: event.target.value
-                      }
-                    });
-                  }
+                  console.log(regex.test(event.target.value));
+                  this.setState({
+                    picture: {
+                      ...this.state.picture,
+                      uploadName: event.target.value
+                    },
+                    nameError: !regex.test(event.target.value)
+                  });
                 }}
               />
+              <Collapse in={this.state.nameError}>
+                <Paper
+                  style={{
+                    padding: 10,
+                    textAlign: "center",
+                    marginBottom: 10,
+                    backgroundColor: "red"
+                  }}
+                >
+                  <Typography style={{ color: "white" }}>
+                    Der Name darf nur aus Buchstaben, Nummern und Unterstrichen
+                    bestehen. Umlaute und 'ß' sind nicht erlaubt.
+                  </Typography>
+                </Paper>
+              </Collapse>
               <img
                 width="100%"
                 id="!"
@@ -257,18 +292,6 @@ class PictureUpload extends React.Component {
             <Grid spacing={1} style={{ marginBottom: 4 }} container>
               <Grid xs={12} sm={6} item>
                 <Button
-                  onClick={() => {
-                    this.props.changePhase(UPLOAD_GROUP_SELECT);
-                  }}
-                  fullWidth
-                  style={{ padding: 10 }}
-                  variant="outlined"
-                >
-                  Gruppen auswählen
-                </Button>
-              </Grid>
-              <Grid xs={12} sm={6} item>
-                <Button
                   onClick={() =>
                     this.setState({ changeDate: !this.state.changeDate })
                   }
@@ -277,6 +300,20 @@ class PictureUpload extends React.Component {
                   variant="outlined"
                 >
                   Datum Ändern
+                </Button>
+              </Grid>
+              <Grid xs={12} sm={6} item>
+                <Button
+                  onClick={() => {
+                    this.props.changePhase(UPLOAD_GROUP_SELECT);
+                  }}
+                  fullWidth
+                  style={{ padding: 10 }}
+                  variant="outlined"
+                >
+                  {this.props.uploadGroups.length === 0
+                    ? "Gruppen auswählen"
+                    : this.props.uploadGroups.length + " Gruppen Ausgewählt"}
                 </Button>
               </Grid>
             </Grid>
@@ -293,8 +330,17 @@ class PictureUpload extends React.Component {
           >
             Wähle Bild
           </Button>
+          <Collapse in={this.state.success}>
+            <Paper>
+              <Typography>Upload war erfolgreich</Typography>
+            </Paper>
+          </Collapse>
           <Collapse
-            in={this.state.uploadReady && this.state.picture.uploadName !== ""}
+            in={
+              this.state.uploadReady &&
+              this.state.picture.uploadName !== "" &&
+              this.state.success === false
+            }
           >
             {this.state.progress === -1 ? (
               <Divider style={{ marginTop: 15 }} />
