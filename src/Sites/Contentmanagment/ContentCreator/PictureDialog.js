@@ -249,6 +249,8 @@ class PictureDialog extends React.Component {
                 <br />
                 height:{displayedPicture.height}px
                 <br />
+                date:{displayedPicture.date}px
+                <br />
                 <a href={displayedPicture.content}>link</a>
                 <br />
               </Typography>
@@ -451,6 +453,8 @@ class PictureDialog extends React.Component {
           img.onload = () => {
             console.log(img.date);
             const tmp = file.name.split(".", 2);
+            const date = new Date(file.lastModified);
+            console.log(date.toISOString().substring(0, 10));
             this.setState({
               uploadName: tmp[0],
               uploadType: tmp[1],
@@ -458,7 +462,7 @@ class PictureDialog extends React.Component {
               uploadImageSrc: e.target.result,
               uploadWidth: img.width,
               uploadHeight: img.height,
-              pictureDate: new Date(file.lastModified)
+              pictureDate: date.toISOString().substring(0, 10)
             });
           };
           img.src = e.target.result;
@@ -518,6 +522,10 @@ class PictureDialog extends React.Component {
               height:{this.state.uploadHeight}px
             </Typography>
             <br />
+            <Typography variant="caption">
+              date:{this.state.pictureDate}
+            </Typography>
+            <br />
           </div>
         </Collapse>
 
@@ -561,6 +569,7 @@ class PictureDialog extends React.Component {
                 this.state.uploadImageSrc,
                 this.state.uploadWidth,
                 this.state.uploadHeight,
+                this.state.pictureDate,
                 response => {
                   if (response.data.success) {
                     this.setState({

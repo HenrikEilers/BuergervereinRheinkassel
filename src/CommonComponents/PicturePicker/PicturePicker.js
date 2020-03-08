@@ -63,7 +63,16 @@ class PicturePicker extends React.Component {
         this.props.stateOfComponent === undefined
           ? PICTURE_PICK
           : this.props.stateOfComponent,
-      choosenGroup: null
+      choosenGroup: null,
+      uploadPicture: {
+        uploadName: "",
+        uploadType: "",
+        uploadFile: null,
+        uploadImageSrc: "",
+        uploadWidth: -1,
+        uploadHeight: -1,
+        pictureDate: new Date()
+      }
     };
   }
 
@@ -159,6 +168,10 @@ class PicturePicker extends React.Component {
         return (
           <React.Fragment>
             <PictureUpload
+              picture={this.state.uploadPicture}
+              setPicture={picture => {
+                this.setState({ uploadPicture: picture });
+              }}
               user={this.props.user}
               changePhase={this.changePhase}
             />

@@ -47,6 +47,7 @@ class Poll extends React.Component {
             <li>{this.state.picture.name}</li>
             <li>{this.state.picture.width}</li>
             <li>{this.state.picture.height}</li>
+            <li>{this.state.picture.date}</li>
           </ul>
         ) : null}
 

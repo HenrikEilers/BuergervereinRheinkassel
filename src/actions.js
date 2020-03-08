@@ -55,6 +55,7 @@ export const postUploadPicture = (
   uploadImageSrc,
   uploadWidth,
   uploadHeight,
+  date,
   callback,
   progress
 ) => {
@@ -68,6 +69,7 @@ export const postUploadPicture = (
 
   formData.append("uploadWidth", uploadWidth);
   formData.append("uploadHeight", uploadHeight);
+  formData.append("date", date);
 
   axios
     .post(
