@@ -1,7 +1,7 @@
 {
   "name": "buergervereinrheinkassel",
   "version": "1.0.0",
-  "description": "Hier wird die website des Buergervereins RheinkasselLangel Entwickelt",
+  "description": "",
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
