@@ -40,8 +40,6 @@ import { postRequest } from "../../../actions.js";
 
 import { withRouter } from "react-router-dom";
 
-import PictureGroupDialogContent from "./PictureGroupDialogContent";
-
 import Box from "../../../CommonComponents/Feed/Box";
 
 //import { postRequest, postUploadPicture } from "../actions.js";

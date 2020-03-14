@@ -5,7 +5,7 @@ import Box from "./Box";
 
 import axios from "axios";
 
-import { postRequest } from "../../actions.js";
+import { getRequestwithAu } from "../../actions.js";
 
 const styles = theme => ({
   App: {
@@ -86,16 +86,27 @@ const styles = theme => ({
 });
 
 class Feed extends React.Component {
-  handleBoxOnClick = FeedID => {
-    const tmpContentHead = this.props.offlineData.find(value => {
-      return value.FeedID === FeedID;
-    });
-    this.props.feedAction(tmpContentHead);
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: props.offlineData === false ? null : props.offlineData
+    };
+  }
+
+  getFeedData = () => {
+    const callback = reponse => {
+      this.setState({ data: reponse.data.feed });
+    };
+    getRequestwithAu(
+      "https://buergerverein-rheilaka.de/phpTest/getFeed.php",
+      this.props.user,
+      callback
+    );
   };
 
   restOfContent = () => {
     const { classes } = this.props;
-    return this.props.offlineData.map((current, index) => {
+    return this.state.data.map((current, index) => {
       if (index > 4) {
         return (
           <Grid
@@ -121,7 +132,8 @@ class Feed extends React.Component {
 
   render() {
     const { classes } = this.props;
-    if (!this.props.offlineData) {
+    if (this.props.offlineData === false && this.state.data === null) {
+      this.getFeedData();
       return (
         <div className={classes.wrapper}>
           <CircularProgress className={classes.progress} />
@@ -137,7 +149,7 @@ class Feed extends React.Component {
           </Grid>
 
           zweite Zeile*/}
-          {this.props.offlineData[0] ? (
+          {this.state.data[0] ? (
             <Grid item container xs={12} sm={8} md={8} lg={6}>
               <Grid
                 item
@@ -149,7 +161,7 @@ class Feed extends React.Component {
               >
                 <Box
                   first
-                  data={this.props.offlineData[0]}
+                  data={this.state.data[0]}
                   onClick={tmpContentHead =>
                     this.props.feedAction(tmpContentHead)
                   }
@@ -157,7 +169,7 @@ class Feed extends React.Component {
               </Grid>
             </Grid>
           ) : null}
-          {this.props.offlineData[1] ? (
+          {this.state.data[1] ? (
             <Grid item container xs={12} sm={4} md={4} lg={3}>
               <Grid
                 item
@@ -168,13 +180,13 @@ class Feed extends React.Component {
                 className={classes.gridbox1}
               >
                 <Box
-                  data={this.props.offlineData[1]}
+                  data={this.state.data[1]}
                   onClick={tmpContentHead =>
                     this.props.feedAction(tmpContentHead)
                   }
                 />
               </Grid>
-              {this.props.offlineData[2] ? (
+              {this.state.data[2] ? (
                 <Grid
                   item
                   xs={6}
@@ -184,7 +196,7 @@ class Feed extends React.Component {
                   className={classes.gridbox1}
                 >
                   <Box
-                    data={this.props.offlineData[2]}
+                    data={this.state.data[2]}
                     onClick={tmpContentHead =>
                       this.props.feedAction(tmpContentHead)
                     }
@@ -193,7 +205,7 @@ class Feed extends React.Component {
               ) : null}
             </Grid>
           ) : null}
-          {this.props.offlineData[3] ? (
+          {this.state.data[3] ? (
             <Grid item container xs={12} sm={8} md={8} lg={3}>
               <Grid
                 item
@@ -204,13 +216,13 @@ class Feed extends React.Component {
                 className={classes.gridbox1}
               >
                 <Box
-                  data={this.props.offlineData[3]}
+                  data={this.state.data[3]}
                   onClick={tmpContentHead =>
                     this.props.feedAction(tmpContentHead)
                   }
                 />
               </Grid>
-              {this.props.offlineData[4] ? (
+              {this.state.data[4] ? (
                 <Grid
                   item
                   xs={6}
@@ -220,7 +232,7 @@ class Feed extends React.Component {
                   className={classes.gridbox1}
                 >
                   <Box
-                    data={this.props.offlineData[4]}
+                    data={this.state.data[4]}
                     onClick={tmpContentHead =>
                       this.props.feedAction(tmpContentHead)
                     }

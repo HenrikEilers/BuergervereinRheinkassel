@@ -19,8 +19,6 @@ import {
 
 import PicturePicker from "../../../CommonComponents/PicturePicker/PicturePicker";
 
-import PictureGroupDialogContent from "./PictureGroupDialogContent";
-
 import Search from "@material-ui/icons/Search";
 
 import PublishIcon from "@material-ui/icons/Publish";

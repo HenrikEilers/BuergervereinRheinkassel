@@ -35,7 +35,7 @@ import { withRouter, Link } from "react-router-dom";
 import ContentDisplayer from "../../../CommonComponents/ContentDisplayer/ContentDisplayer";
 
 import PictureDialog from "./PictureDialog";
-import ContentHeadDialog from "./ContentHeadDialog";
+import ContentHeadDialog from "./tmpContentHeadDialog";
 
 import { postRequest } from "../../../actions.js";
 

@@ -36,11 +36,11 @@ import {
   KeyboardDatePicker
 } from "@material-ui/pickers";
 
-import { postRequest } from "../../actions.js";
+import { postRequest } from "../../../actions.js";
 
 import { withRouter } from "react-router-dom";
 
-import PictureGroupDialogContent from "./PictureGroupDialogContent";
+import PicturePicker from "../../../CommonComponents/PicturePicker/PicturePicker";
 
 import Box from "../../../CommonComponents/Feed/Box";
 
@@ -68,6 +68,10 @@ const styles = theme => ({
   }
 });
 
+const EDIT_CONTENTHEAD = "EDIT_CONTENTHEAD";
+const PICK_PICTURE = "PICK_PICTURE";
+const PICK_CONTENT_GROUP = "PICK_CONTENT_GROUP";
+
 const boxSizeY = [153, 175, 270];
 class tmpContentHeadDialog extends React.Component {
   constructor(props) {
@@ -81,17 +85,26 @@ class tmpContentHeadDialog extends React.Component {
       dateError: false,
       displaySize: 0,
       first: false,
-      choosePicture: 0,
+      stateOfDialog: EDIT_CONTENTHEAD,
       displayDate: this.props.contentHead.date === "0000-00-00" ? false : true,
-      pictureList: null,
-      imgSearch: "",
-      choosenPictureGroup: null,
-      pictureGroups: null,
       contentGroups: null,
       choosenContentGroups: null,
       choosenContentGroupsCopy: null
     };
   }
+
+  renderPhase = () => {
+    if (this.state.stateOfDialog === EDIT_CONTENTHEAD) {
+      return <div style={{ margin: 15 }}>{this.renderGrid()}</div>;
+    }
+    if (this.state.stateOfDialog === PICK_PICTURE) {
+      return this.renderPicturePick();
+    }
+    if (this.state.stateOfDialog === PICK_CONTENT_GROUP) {
+      return this.renderChooseContentGroups();
+    }
+    return null;
+  };
 
   /**erstellt Kopie von Objekten */
   bestCopyEver = src => {
@@ -102,7 +115,7 @@ class tmpContentHeadDialog extends React.Component {
    * sich verändert hat und gib wahrheits wert zurück
    */
   hasToSave = () => {
-    if (this.state.choosePicture !== 0) {
+    if (this.state.stateOfDialog !== 0) {
       return false;
     }
     if (this.state.tmpContentHead.name === "") {
@@ -174,7 +187,7 @@ class tmpContentHeadDialog extends React.Component {
       dateError: false,
       displaySize: 0,
       first: false,
-      choosePicture: 0,
+      stateOfDialog: EDIT_CONTENTHEAD,
       displayDate: this.props.contentHead.date === "0000-00-00" ? false : true,
       pictureList: null,
       imgSearch: "",
@@ -231,179 +244,31 @@ class tmpContentHeadDialog extends React.Component {
             Hinzufügen
           </Button>
         </Collapse>
-        {this.state.choosePicture === 0 ? (
-          <div style={{ margin: 15 }}>{this.renderGrid()}</div>
-        ) : null}
-        {this.state.choosePicture === 1 ? this.renderChoosePicture() : null}
-        {this.state.choosePicture === 2 ? this.renderChooseGroup() : null}
-        {this.state.choosePicture === 3
-          ? this.renderChooseContentGroups()
-          : null}
+        {this.renderPhase()}
       </Dialog>
     );
   }
 
-  //TODO implementieren einer Ordener Strucktur nach forbild der Contentfolder
-  renderChooseGroup = () => {
-    return (
-      <PictureGroupDialogContent
-        user={this.props.user}
-        pictureList={this.state.pictureList}
-        pictureGroups={this.state.pictureGroups}
-        backUpGroups={Groups => {
-          this.setState({ pictureGroups: Groups });
-        }}
-        pickedGroup={this.state.choosenPictureGroup}
-        handleGroupPick={value => {
-          this.setState({ choosenPictureGroup: value, choosePicture: 1 });
-        }}
-      />
-    );
-  };
-
-  /**rendert die Bild auswahl für das Feed Element des ContentHeads */
-  renderChoosePicture = () => {
+  /**rendert die Bildauswahl für das Feed Element des ContentHeads */
+  renderPicturePick = () => {
     const { classes } = this.props;
 
-    const pictureChoosen = index => {
-      this.setState({
-        tmpContentHead: {
-          ...this.state.tmpContentHead,
-          pictureID: this.state.pictureList[index].pictureID,
-          imgcontent: this.state.pictureList[index].imgcontent
-        },
-        choosePicture: 0,
-        choosenPictureGroup: null,
-        pictureGroups: null
-      });
-    };
-    const renderPictureList = () => {
-      return (
-        <Grid container>
-          {this.state.pictureList.map((value, index) => {
-            if (
-              value.name
-                .toUpperCase()
-                .search(this.state.imgSearch.toUpperCase()) !== -1 &&
-              (this.state.choosenPictureGroup === null ||
-                -1 !==
-                  this.state.choosenPictureGroup.gruppenmitglieder.findIndex(
-                    value1 => {
-                      return value.pictureID === value1;
-                    }
-                  ))
-            ) {
-              return (
-                <Grid
-                  key={index}
-                  xs={12}
-                  sm={6}
-                  item
-                  style={{ padding: "0px 5px", paddingBottom: 10 }}
-                >
-                  <Card className={classes.card}>
-                    <ButtonBase
-                      style={{
-                        display: "block",
-                        width: "100%"
-                      }}
-                      onClick={() => {
-                        pictureChoosen(index);
-                      }}
-                    >
-                      <Typography style={{ color: "black" }} variant="h5">
-                        {value.name}
-                      </Typography>
-                      <Card className={classes.card}>
-                        <img
-                          style={{
-                            verticalAlign: "middle",
-                            overflowY: "hidden"
-                          }}
-                          width="100%"
-                          src={value.content}
-                          alt={value.name}
-                        />
-                      </Card>
-                    </ButtonBase>
-                  </Card>
-                </Grid>
-              );
-            } else return null;
-          })}
-        </Grid>
-      );
-    };
-
-    if (this.state.pictureList) {
-      return (
-        <div style={{ padding: 15, paddingBottom: 5 }}>
-          <Button
-            onClick={() => {
-              this.setState({ choosePicture: 0 });
-            }}
-            fullWidth
-            variant="outlined"
-            style={{ padding: 10 }}
-          >
-            Abbrechen
-          </Button>
-          <Divider style={{ margin: "10px 0px" }} />
-          <Button
-            onClick={() => {
-              this.setState({ choosePicture: 2 });
-            }}
-            fullWidth
-            variant="outlined"
-            style={{ padding: 15, marginBottom: 10 }}
-          >
-            Nach Gruppe Sortieren
-          </Button>
-          <TextField
-            fullWidth
-            variant="outlined"
-            style={{ marginBottom: 10 }}
-            value={this.state.imgSearch}
-            onChange={event => {
-              this.setState({ imgSearch: event.target.value });
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              )
-            }}
-          />
-          {this.state.choosenPictureGroup !== null ? (
-            <Typography variant="overline" style={{ margin: "0px 10px" }}>
-              Gruppe:{this.state.choosenPictureGroup.name}
-            </Typography>
-          ) : null}
-          <div>{renderPictureList()}</div>
-        </div>
-      );
-    } else {
-      postRequest(
-        "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getPictures.php",
-        this.props.user,
-        "!",
-        response => {
-          if (response.data.success) {
-            this.setState({
-              pictureList: response.data.pictures
-            });
-          } else {
-            this.setState({});
-          }
-        }
-      );
-      return (
-        <div style={{ textAlign: "center", padding: 20 }}>
-          <CircularProgress />
-        </div>
-      );
-    }
+    return (
+      <PicturePicker
+        getPicture={picture => {
+          this.setState({
+            tmpContentHead: {
+              ...this.state.tmpContentHead,
+              pictureID: picture.pictureID,
+              imgcontent: picture.imgcontent
+            },
+            stateOfDialog: EDIT_CONTENTHEAD
+          });
+        }}
+        disableUpload={false}
+        user={this.props.user}
+      />
+    );
   };
 
   /**rendert dei hauptbearbeitungs seite für den Contenthead */
@@ -428,7 +293,7 @@ class tmpContentHeadDialog extends React.Component {
               padding: 10
             }}
           >
-            <FormControl style={{ border: "solid 0px red" }}>
+            <FormControl style={{ width: "100%", border: "solid 0px red" }}>
               <InputLabel htmlFor="box-size">Größe</InputLabel>
               <Select
                 style={{ width: "100%" }}
@@ -467,7 +332,7 @@ class tmpContentHeadDialog extends React.Component {
               padding: 10
             }}
           >
-            <FormControl>
+            <FormControl style={{ width: "100%" }}>
               <InputLabel htmlFor="box-size">Erstes Element</InputLabel>
               <Select
                 style={{ width: "100%" }}
@@ -530,7 +395,7 @@ class tmpContentHeadDialog extends React.Component {
             variant="outlined"
             style={{ padding: "15px", marginTop: "10px" }}
             onClick={() => {
-              this.setState({ choosePicture: 1 });
+              this.setState({ stateOfDialog: PICK_PICTURE });
             }}
           >
             Bild verändern
@@ -542,7 +407,7 @@ class tmpContentHeadDialog extends React.Component {
             variant="outlined"
             style={{ padding: "15px", marginTop: "10px" }}
             onClick={() => {
-              this.setState({ choosePicture: 3 });
+              this.setState({ stateOfDialog: PICK_CONTENT_GROUP });
             }}
           >
             Gruppenzugehörigkeit
@@ -558,7 +423,6 @@ class tmpContentHeadDialog extends React.Component {
       <React.Fragment>
         <TextField
           fullWidth
-          style={{ padding: "10px 0px" }}
           variant="outlined"
           label="Überschrift"
           value={this.state.tmpContentHead.name}
@@ -573,7 +437,7 @@ class tmpContentHeadDialog extends React.Component {
         />
         <TextField
           fullWidth
-          style={{ paddingTop: "10px" }}
+          style={{ marginTop: "10px" }}
           variant="outlined"
           label="Beschriftung"
           value={this.state.tmpContentHead.beschreibung}
@@ -696,7 +560,7 @@ class tmpContentHeadDialog extends React.Component {
                 fullWidth
                 variant="outlined"
                 onClick={() => {
-                  this.setState({ choosePicture: 0 });
+                  this.setState({ stateOfDialog: EDIT_CONTENTHEAD });
                 }}
                 style={{ padding: "10px" }}
               >

@@ -68,8 +68,8 @@ class Appdrawer extends React.Component {
     this.state = {
       left: false,
       islogedIn: false,
-      feedContentHead: null,
       changePW: false,
+      feedContentHead: null,
       user: {
         email: "",
         password: "",
@@ -231,29 +231,15 @@ class Appdrawer extends React.Component {
         <Route
           exact
           path="/"
-          render={() => {
-            if (this.state.feedContentHead === null) {
-              return (
-                <div style={{ textAlign: "center", padding: 20 }}>
-                  <CircularProgress />
-                </div>
-              );
-            } else {
-              return (
-                <Feed
-                  onlineData={false}
-                  offlineData={this.state.feedContentHead}
-                  user={this.state.user}
-                  feedAction={tmpContentHead => {
-                    this.props.history.push("/content/" + tmpContentHead.name);
-                  }}
-                  updateFeedData={FeedContentHead => {
-                    this.setState({ FeedContentHead });
-                  }}
-                />
-              );
-            }
-          }}
+          render={() => (
+            <Feed
+              offlineData={false}
+              user={this.state.user}
+              feedAction={tmpContentHead => {
+                this.props.history.push("/content/" + tmpContentHead.name);
+              }}
+            />
+          )}
         />
         <Route
           exact
