@@ -17,6 +17,8 @@ import {
   LinearProgress
 } from "@material-ui/core";
 
+import PicturePicker from "../../../CommonComponents/PicturePicker/PicturePicker";
+
 import PictureGroupDialogContent from "./PictureGroupDialogContent";
 
 import Search from "@material-ui/icons/Search";
@@ -96,39 +98,25 @@ const styles = theme => ({
     //theme.Button
   }
 });
-const EMPTY_PICTURE_START = 0;
-const OWNPICTURE_START = 1;
-const LINK_START = 2;
-const CHOOSE_PICTURE = 3;
-const UPLOAD_PICTURE = 4;
-const CHOOSE_GROUP = 5;
+const EMPTY_PICTURE_START = "EMPTY_PICTURE_START";
+const OWNPICTURE_START = "OWNPICTURE_START";
+const CHOOSE_PICTURE = "CHOOSE_PICTURE";
 
 class PictureDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      picture:
+        props.pictureContent.ContentTypeID === 2
+          ? { ...props.pictureContent }
+          : null,
       stateOfDialog: props.stateOfDialog,
-      link: props.stateOfDialog === 0 ? props.pictureContent.content : "",
+      link:
+        props.pictureContent.ContentTypeID === 3
+          ? props.pictureContent.content
+          : "",
       getloadingErrorPicure: true,
-      extendInfo: false,
-      pictureLoaded: false,
-      pictureList: null,
-      imgSearch: "",
-      pictureChange: false,
-      newPicture: null,
-      uploadReady: false,
-      uploadName: "",
-      uploadType: "",
-      uploadFile: null,
-      uploadImageSrc: "",
-      uploadWidth: "",
-      uploadHeight: "",
-      progress: -1,
-      linkReady: false,
-      uploadError: false,
-      uploadErrorText: "",
-      pictureGroups: null,
-      choosenPictureGroup: null
+      extendInfo: false
     };
   }
 
@@ -139,17 +127,8 @@ class PictureDialog extends React.Component {
     if (OWNPICTURE_START === this.state.stateOfDialog) {
       return this.renderOwnPictureStart();
     }
-    if (LINK_START === this.state.stateOfDialog) {
-      return this.renderEmptyPictureStart();
-    }
     if (CHOOSE_PICTURE === this.state.stateOfDialog) {
       return this.renderChoosePicture();
-    }
-    if (UPLOAD_PICTURE === this.state.stateOfDialog) {
-      return this.renderUploadPicture();
-    }
-    if (CHOOSE_GROUP === this.state.stateOfDialog) {
-      return this.renderChooseGroup();
     }
   };
 
@@ -215,9 +194,7 @@ class PictureDialog extends React.Component {
   /**rendert den Dialog wenn schon ein Bild vorhanden ist das im iamge Ordner gespeichert ist  */
   renderOwnPictureStart = () => {
     const { classes } = this.props;
-    const displayedPicture = !this.state.pictureChange
-      ? this.props.pictureContent
-      : this.state.newPicture;
+
     return (
       <React.Fragment>
         <ButtonBase
@@ -232,8 +209,8 @@ class PictureDialog extends React.Component {
           <img
             id="myImg"
             width="100%"
-            src={displayedPicture.content}
-            alt={displayedPicture.name}
+            src={this.state.picture.content}
+            alt={this.state.picture.name}
           />
         </ButtonBase>
         <div style={{ padding: 5 }}>
@@ -241,17 +218,17 @@ class PictureDialog extends React.Component {
             <Collapse in={this.state.extendInfo}>
               {" "}
               <Typography variant="caption">
-                name:{displayedPicture.name}
+                name:{this.state.picture.name}
                 <br />
-                pictureID:{displayedPicture.pictureID}
+                pictureID:{this.state.picture.pictureID}
                 <br />
-                width:{displayedPicture.width}px
+                width:{this.state.picture.width}px
                 <br />
-                height:{displayedPicture.height}px
+                height:{this.state.picture.height}px
                 <br />
-                date:{displayedPicture.date}px
+                date:{this.state.picture.date}px
                 <br />
-                <a href={displayedPicture.content}>link</a>
+                <a href={this.state.picture.content}>link</a>
                 <br />
               </Typography>
             </Collapse>
@@ -277,8 +254,7 @@ class PictureDialog extends React.Component {
               onClick={() => {
                 this.setState({
                   stateOfDialog: EMPTY_PICTURE_START,
-                  pictureChange: false,
-                  newPicture: null
+                  picture: null
                 });
               }}
               className={classes.newPicture1}
@@ -294,356 +270,17 @@ class PictureDialog extends React.Component {
   };
 
   renderChoosePicture = () => {
-    const { classes } = this.props;
-
-    const pictureChoosen = index => {
-      this.setState({
-        pictureChange: true,
-        newPicture: this.state.pictureList[index],
-        stateOfDialog: OWNPICTURE_START,
-        pictureGroups: null,
-        choosenPictureGroup: null
-      });
-    };
-    const renderPictureList = () => {
-      return (
-        <Grid container>
-          {this.state.pictureList.map((value, index) => {
-            if (
-              value.name
-                .toUpperCase()
-                .search(this.state.imgSearch.toUpperCase()) !== -1 &&
-              (this.state.choosenPictureGroup === null ||
-                -1 !==
-                  this.state.choosenPictureGroup.gruppenmitglieder.findIndex(
-                    value1 => {
-                      return value.pictureID === value1;
-                    }
-                  ))
-            ) {
-              return (
-                <Grid
-                  key={index}
-                  xs={12}
-                  sm={6}
-                  item
-                  style={{ padding: "0px 5px", paddingBottom: 10 }}
-                >
-                  <ButtonBase
-                    style={{
-                      position: "relative",
-                      display: "block",
-                      width: "100%"
-                    }}
-                    onClick={() => {
-                      pictureChoosen(index);
-                    }}
-                  >
-                    <Card className={classes.card}>
-                      <Typography style={{ color: "black" }} variant="h5">
-                        {value.name}
-                      </Typography>
-                      <Card className={classes.card}>
-                        <img
-                          style={{
-                            verticalAlign: "middle",
-                            overflowY: "hidden"
-                          }}
-                          width="100%"
-                          src={value.content}
-                          alt={value.name}
-                        />
-                      </Card>
-                    </Card>
-                  </ButtonBase>
-                </Grid>
-              );
-            } else return null;
-          })}
-        </Grid>
-      );
-    };
-
-    if (this.state.pictureList) {
-      return (
-        <div style={{ padding: 15, paddingBottom: 5 }}>
-          <Button
-            onClick={() => {
-              this.setState({
-                stateOfDialog: UPLOAD_PICTURE,
-                pictureGroups: null,
-                choosenPictureGroup: null
-              });
-            }}
-            fullWidth
-            variant="outlined"
-            style={{ padding: 15 }}
-          >
-            <PublishIcon />
-            Upload
-          </Button>
-          <Divider style={{ margin: "10px 0px" }} />
-          <Button
-            onClick={() => {
-              this.setState({ stateOfDialog: CHOOSE_GROUP });
-            }}
-            fullWidth
-            variant="outlined"
-            style={{ padding: 15, marginBottom: 10 }}
-          >
-            Nach Gruppe Sortieren
-          </Button>
-          <TextField
-            fullWidth
-            variant="outlined"
-            style={{ paddingBottom: 10 }}
-            value={this.state.imgSearch}
-            onChange={event => {
-              this.setState({ imgSearch: event.target.value });
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              )
-            }}
-          />
-          {this.state.choosenPictureGroup !== null ? (
-            <Typography variant="overline" style={{ margin: "0px 10px" }}>
-              Gruppe:{this.state.choosenPictureGroup.name}
-            </Typography>
-          ) : null}
-          <div>{renderPictureList()}</div>
-        </div>
-      );
-    } else {
-      postRequest(
-        "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getPictures.php",
-        this.props.user,
-        "!",
-        response => {
-          if (response.data.success) {
-            this.setState({
-              pictureList: response.data.pictures
-            });
-          } else {
-            this.setState({
-              stateOfDialog: OWNPICTURE_START
-            });
-          }
-        }
-      );
-      return (
-        <div style={{ textAlign: "center", padding: 20 }}>
-          <CircularProgress />
-        </div>
-      );
-    }
-  };
-
-  renderUploadPicture = () => {
-    const { classes } = this.props;
-    const onChange = event => {
-      const reader = new FileReader();
-      reader.onload = (file => {
-        return e => {
-          console.log(new Date(file.lastModified));
-          const img = new Image();
-          img.onload = () => {
-            console.log(img.date);
-            const tmp = file.name.split(".", 2);
-            const date = new Date(file.lastModified);
-            console.log(date.toISOString().substring(0, 10));
-            this.setState({
-              uploadName: tmp[0],
-              uploadType: tmp[1],
-              uploadFile: file,
-              uploadImageSrc: e.target.result,
-              uploadWidth: img.width,
-              uploadHeight: img.height,
-              pictureDate: date.toISOString().substring(0, 10)
-            });
-          };
-          img.src = e.target.result;
-        };
-      })(event.target.files[0]);
-      reader.readAsDataURL(event.target.files[0]);
-    };
-
     return (
-      <div className={classes.padding}>
-        <input
-          type="file"
-          name="file"
-          id="file"
-          accept="image/*"
-          className={classes.hiddenInput}
-          onChange={onChange}
-        />
-
-        <Collapse in={this.state.uploadReady}>
-          <div style={{ marginBottom: 7 }}>
-            <TextField
-              style={{ marginBottom: "7px" }}
-              variant="outlined"
-              fullWidth
-              label="Name des Bildes"
-              value={this.state.uploadName}
-              onChange={event => {
-                const regex = /^[\w-]*$/;
-                if (regex.test(event.target.value)) {
-                  this.setState({ uploadName: event.target.value });
-                }
-              }}
-            />
-            <img
-              width="100%"
-              id="!"
-              onLoad={() => {
-                this.setState({ uploadReady: true });
-              }}
-              src={this.state.uploadImageSrc}
-              alt="!"
-            />
-            <Typography variant="caption">
-              name:{this.state.uploadName}
-            </Typography>
-            <br />
-            <Typography variant="caption">
-              datatype:{this.state.uploadType}
-            </Typography>
-            <br />
-            <Typography variant="caption">
-              width:{this.state.uploadWidth}px
-            </Typography>
-            <br />
-            <Typography variant="caption">
-              height:{this.state.uploadHeight}px
-            </Typography>
-            <br />
-            <Typography variant="caption">
-              date:{this.state.pictureDate}
-            </Typography>
-            <br />
-          </div>
-        </Collapse>
-
-        <Button
-          style={{ padding: 15 }}
-          variant="outlined"
-          fullWidth
-          onClick={() => {
-            var x = document.getElementById("file");
-            x.click();
-          }}
-        >
-          Wähle Bild
-        </Button>
-        <Collapse in={this.state.uploadReady && this.state.uploadName !== ""}>
-          {this.state.progress === -1 ? (
-            <Divider style={{ marginTop: 15 }} />
-          ) : (
-            <React.Fragment>
-              <LinearProgress
-                style={{ marginTop: 15 }}
-                variant="determinate"
-                value={this.state.progress}
-              />
-            </React.Fragment>
-          )}
-          <Button
-            style={{ padding: 15, marginTop: "15px" }}
-            variant="outlined"
-            fullWidth
-            onClick={() => {
-              this.setState({
-                uploadError: false,
-                uploadErrorText: ""
-              });
-              postUploadPicture(
-                this.props.user,
-                this.state.uploadFile,
-                this.state.uploadName,
-                this.state.uploadType,
-                this.state.uploadImageSrc,
-                this.state.uploadWidth,
-                this.state.uploadHeight,
-                this.state.pictureDate,
-                response => {
-                  if (response.data.success) {
-                    this.setState({
-                      stateOfDialog: CHOOSE_PICTURE,
-                      pictureList: null,
-                      imgSearch: "",
-                      pictureChange: false,
-                      newPicture: null,
-                      uploadReady: false,
-                      uploadName: "",
-                      uploadType: "",
-                      uploadFile: null,
-                      uploadImageSrc: "",
-                      uploadWidth: "",
-                      uploadHeight: "",
-                      progress: -1,
-                      linkReady: false,
-                      uploadError: false,
-                      uploadErrorText: ""
-                    });
-                  } else {
-                    this.setState({
-                      progress: -1,
-                      uploadError: true,
-                      uploadErrorText: response.data.errortext
-                    });
-                  }
-                },
-                progress => {
-                  this.setState({ progress: progress });
-                }
-              );
-              this.setState({ progress: 0 });
-            }}
-          >
-            <PublishIcon />
-            Upload
-          </Button>
-        </Collapse>
-        <Collapse in={this.state.uploadError}>
-          <Card
-            style={{
-              textAlign: "center",
-              backgroundColor: "red",
-              color: "white",
-              padding: "15px",
-              marginTop: "10px"
-            }}
-          >
-            <Typography variant="button">
-              {this.state.uploadErrorText}
-            </Typography>
-          </Card>
-        </Collapse>
-      </div>
-    );
-  };
-
-  renderChooseGroup = () => {
-    return (
-      <PictureGroupDialogContent
-        user={this.props.user}
-        pictureList={this.state.pictureList}
-        pictureGroups={this.state.pictureGroups}
-        backUpGroups={Groups => {
-          this.setState({ pictureGroups: Groups });
-        }}
-        pickedGroup={this.state.choosenPictureGroup}
-        handleGroupPick={value => {
+      <PicturePicker
+        getPicture={picture =>
           this.setState({
-            choosenPictureGroup: value,
-            stateOfDialog: CHOOSE_PICTURE
-          });
-        }}
+            picture,
+            open: false,
+            stateOfDialog: OWNPICTURE_START
+          })
+        }
+        disableUpload={false}
+        user={this.props.user}
       />
     );
   };
@@ -653,7 +290,7 @@ class PictureDialog extends React.Component {
       this.props.changeSave(
         2,
         this.props.pictureContent.reihenfolge,
-        this.state.newPicture
+        this.state.picture
       );
     }
     if (this.state.stateOfDialog === EMPTY_PICTURE_START) {
@@ -664,6 +301,48 @@ class PictureDialog extends React.Component {
       );
     }
     this.props.onClose();
+  };
+
+  hasToSave = () => {
+    /**Voraussetzungen:
+     * -Nur in den Phasen OWNPICTURE_START und EMPTY_PICTURE_START darf gespeichert werden
+     * -Content muss sich verändert haben
+     * -Link muss funktionieren
+     */
+
+    //Phase OWNPICTURE_START ist aktiv
+    if (this.state.stateOfDialog === OWNPICTURE_START) {
+      //Vor her war ein Link ausgewählt
+      if (this.props.pictureContent.ContentTypeID === 3) {
+        return true;
+      } else {
+        //Anderes Bild muss gewählt sein
+        if (
+          this.props.pictureContent.pictureID !== this.state.picture.pictureID
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    //Phase EMPTY_PICTURE_START ist aktiv
+    if (this.state.stateOfDialog === EMPTY_PICTURE_START) {
+      //Der Link zeigt auf ein Reales Bild
+      if (this.state.getloadingErrorPicure === false) {
+        //Vor her war ein Bild ausgewählt
+        if (this.props.pictureContent.ContentTypeID === 2) {
+          return true;
+        } else {
+          //Anderer Link muss ausgewählt worden sein
+          if (this.props.pictureContent.content !== this.state.link) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+    }
   };
 
   //render methode
@@ -679,44 +358,22 @@ class PictureDialog extends React.Component {
           onClose={this.props.onClose}
           onExited={() => {
             this.setState({
+              picture:
+                this.props.pictureContent.ContentTypeID === 2
+                  ? { ...this.props.pictureContent }
+                  : null,
               stateOfDialog: this.props.stateOfDialog,
               link:
-                this.props.stateOfDialog === 0
+                this.props.pictureContent.ContentTypeID === 3
                   ? this.props.pictureContent.content
                   : "",
               getloadingErrorPicure: true,
-              extendInfo: false,
-              pictureLoaded: false,
-              pictureList: null,
-              imgSearch: "",
-              pictureChange: false,
-              newPicture: null,
-              uploadReady: false,
-              uploadName: "",
-              uploadType: "",
-              uploadFile: null,
-              uploadImageSrc: "",
-              uploadWidth: "",
-              uploadHeight: "",
-              progress: -1,
-              linkReady: false,
-              uploadError: false,
-              uploadErrorText: "",
-              pictureGroups: null,
-              choosenPictureGroup: null
+              extendInfo: false
             });
           }}
         >
           <Collapse
-            in={
-              ((this.state.pictureChange &&
-                this.state.newPicture.pictureID !==
-                  this.props.pictureContent.pictureID) ||
-                (this.state.getloadingErrorPicure === false &&
-                  this.state.link !== this.props.pictureContent.content)) &&
-              (this.state.stateOfDialog === OWNPICTURE_START ||
-                this.state.stateOfDialog === EMPTY_PICTURE_START)
-            }
+            in={this.hasToSave()}
             style={{
               backgroundColor: "green"
             }}

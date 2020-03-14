@@ -611,7 +611,11 @@ class ContentCreator extends React.Component {
             this.state.pictureDialogIndex === index
           }
           user={this.props.user}
-          stateOfDialog={stateOfDialog()}
+          stateOfDialog={
+            this.state.contentBody[index].ContentTypeID === 2
+              ? "OWNPICTURE_START"
+              : "EMPTY_PICTURE_START"
+          }
           //stateOfDialog={1}
           onClose={() => {
             this.setState({ pictureDialogOpen: false, pictureDialogIndex: -1 });
