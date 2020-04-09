@@ -93,6 +93,14 @@ class Feed extends React.Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (this.props.offlineData && this.state.data)
+      if (this.props.offlineData.length !== this.state.data.length) {
+        this.setState({ data: this.props.offlineData });
+      }
+  }
+
   getFeedData = () => {
     const callback = reponse => {
       this.setState({ data: reponse.data.feed });

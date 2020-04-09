@@ -19,7 +19,7 @@ import Login from "./Sites/Login/Login";
 import Feed from "./CommonComponents/Feed/Feed";
 import TopicSite from "./CommonComponents/TopicSite/TopicSite";
 import Settings from "./Sites/Settings/Settings";
-import Poll from "./Sites/Poll/Poll";
+import Topic from "./Sites/Themen/Topic";
 
 import SideList from "./CommonComponents/SideList/SideList";
 
@@ -261,44 +261,12 @@ class Appdrawer extends React.Component {
         />
         <Route
           path="/abstimmungen/"
-          render={() => <Poll user={this.state.user} />}
+          render={() => <Topic user={this.state.user} />}
         />
         <Route
           path="/content/"
           render={() => {
-            if (this.state.feedContentHead === null) {
-              return (
-                <div style={{ textAlign: "center", padding: 20 }}>
-                  <CircularProgress />
-                </div>
-              );
-            } else {
-              var errorText = undefined;
-              const indexFinden = () => {
-                const t = this.state.feedContentHead.findIndex(value => {
-                  return (
-                    this.props.location.pathname === "/content/" + value.name
-                  );
-                });
-                if (t !== -1) {
-                  return t;
-                } else {
-                  errorText =
-                    "Die Seite Existiert nicht oder sie haben nicht die Benötigten Rechte.";
-                  return t;
-                }
-              };
-              const index = indexFinden();
-              return (
-                <ContentDisplayer
-                  user={this.state.user}
-                  contentHead={
-                    index === -1 ? null : this.state.feedContentHead[index]
-                  }
-                  errorText={errorText}
-                />
-              );
-            }
+            return <Topic user={this.state.user} />;
           }}
         />
         <Route

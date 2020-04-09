@@ -86,12 +86,14 @@ class Feedmanagement extends React.Component {
   render() {
     const { classes } = this.props;
 
-    const feedContent = () => {
-      if (this.state.memberView) {
+    const feedContent = memberView => {
+      if (memberView === false) {
         return this.props.offlineFeed.filter(value => {
           return value.rank === 0;
         });
-      } else return this.props.offlineFeed;
+      } else {
+        return [...this.props.offlineFeed];
+      }
     };
 
     return (
@@ -172,8 +174,7 @@ class Feedmanagement extends React.Component {
           {this.state.designView ? (
             this.props.offlineFeed ? (
               <Feed
-                onlineData={false}
-                offlineData={feedContent()}
+                offlineData={feedContent(this.state.memberView)}
                 feedAction={tmpContentHead => {}}
               />
             ) : (
