@@ -28,9 +28,10 @@ import { Route, Link, withRouter } from "react-router-dom";
 import { postRequest } from "./actions";
 
 import Contentmanager from "./Sites/Contentmanagment/Contentmanager";
-import ContentDisplayer from "./CommonComponents/ContentDisplayer/ContentDisplayer";
 import AddUser from "./Sites/AddUser/AddUser";
 import UserOverview from "./Sites/UserOverview/UserOverview";
+import Impressum from "./Sites/Impressum/Impressum";
+import Poll from "./Sites/Poll/Poll";
 
 const styles = theme => ({
   root: {
@@ -243,6 +244,11 @@ class Appdrawer extends React.Component {
         />
         <Route
           exact
+          path="/impressum"
+          render={() => <Impressum user={this.state.user} />}
+        />
+        <Route
+          exact
           path="/settings"
           render={() => (
             <Settings
@@ -261,7 +267,7 @@ class Appdrawer extends React.Component {
         />
         <Route
           path="/abstimmungen/"
-          render={() => <Topic user={this.state.user} />}
+          render={() => <Poll user={this.state.user} />}
         />
         <Route
           path="/content/"

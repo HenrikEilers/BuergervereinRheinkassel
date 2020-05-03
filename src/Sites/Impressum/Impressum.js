@@ -2,184 +2,239 @@ import {
   withStyles,
   Paper,
   Typography,
-  TextField,
-  Button,
   CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  ButtonBase,
-  Snackbar
+  Button
 } from "@material-ui/core";
-import Check from "@material-ui/icons/Check";
-import Clear from "@material-ui/icons/Clear";
-import Delete from "@material-ui/icons/Delete";
 
 import { postRequest } from "../../actions.js";
-
-import { withRouter } from "react-router-dom";
-import UserDialog from "./UserDialog";
 
 import React from "react";
 import {} from "@material-ui/icons";
 
-const styles = {
+import ChangeImpressumg from "./ChangeImpressumg.js";
+
+const styles = theme => ({
   wrapper: {
-    display: "-webkit-flex",
-    justifyContent: "center",
-    WebkitJustifyContent: "center",
-    flexDirection: "column",
-    WebkitFlexDirection: "column",
-    alignItems: "center",
-    WebkitAlignItems: "center"
-  },
-  paper: {
-    display: "-webkit-flex",
-    flexDirection: "column",
-    WebkitFlexDirection: "column",
-    justifyContent: "center",
-    WebkitJustifyContent: "center",
-    width: "300px",
-    marginBottom: 15
+    textAlign: "left",
+    //border: "solid 2px red",
+    //paddingTop: "10px",
+    [theme.breakpoints.up("xs")]: {
+      width: "90%",
+      margin: "auto"
+    },
+    [theme.breakpoints.up("sm")]: {
+      width: "525px",
+      margin: "auto"
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "810px"
+    }
   }
-};
+});
 
 class Impressum extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      onData: false,
-      openUserDialog: false,
-      userSuccess: null,
-      userList: [],
-      chooseUser: {
-        username: "",
-        email: "",
-        userID: -1,
-        rank: -1,
-        initialPW: null
-      },
-      deleteAlert: false
+      impressum: null,
+      impressum1: {
+        angabenGemaess5TMG: {
+          organisation: "Bürgerverein Rheinkassel e.V.",
+          strasse: "Amandus Straße",
+          spezifizierung: "",
+          plzStadt: "50769 Köln",
+          vereinRegisterNummer: "vereinRegisterNummer",
+          registerGericht: "registerGericht",
+          anwaltlicheVertretung: "Anwalt Anwalt"
+        },
+        contact: {
+          telefonNummer: "0221 1234567",
+          email: "beispielMail@email.com"
+        },
+        verantwortlichFuerDenInhaltNach55Abs2RStV: {
+          name: "Beispiel Redakteur",
+          strasseHausnummer: "BeispielStraße 2",
+          spezifizierung: "",
+          plzStadt: "50769 Köln"
+        }
+      }
     };
   }
 
+  loadImpressum = () => {
+    const callback = response => {
+      console.log(response.data);
+      if (response.data.success) {
+        this.setState({
+          impressum: response.data.impressum
+        });
+      } else {
+        this.setState({
+          error: true,
+          errorText: response.data.errortext
+        });
+      }
+    };
+    postRequest(
+      "https://www.buergerverein-rheindoerfer.de/phpTest/Impressum/getImpressum.php",
+      this.props.user,
+      {},
+      callback
+    );
+  };
+
   render() {
     const { classes } = this.props;
-    if (!this.state.onData) {
-      const callback = response => {
-        console.log(response);
-        if (response.data.success) {
-          this.setState({
-            onData: true,
-            userSuccess: true,
-            userList: response.data.userList
-          });
-        } else {
-          this.setState({
-            onData: true,
-            userSuccess: false,
-            errorText: response.data.errortext
-          });
-        }
-      };
-      postRequest(
-        "https://www.buergerverein-rheindoerfer.de/phpTest/userOverview/getUser.php",
-        this.props.user,
-        this.state.table,
-        callback
-      );
-      return <CircularProgress />;
-    }
-    if (!this.state.userSuccess) {
+    //Im falle Eines Error wird eine Nachricht Angezeigt
+    if (this.state.error) {
       return (
-        <div className={classes.wrapper}>
-          <Paper
-            className={classes.paper}
-            style={{
-              display: "flex",
-              color: "white",
-              backgroundColor: "red",
-              padding: 10
-            }}
-          >
-            <Typography>{this.state.errorText}</Typography>
-          </Paper>
+        <Paper style={{ padding: 10, backgroundColor: "red" }}>
+          <Typography style={{ color: "white" }}>
+            {this.state.errorText}
+          </Typography>
+        </Paper>
+      );
+    }
+    //Läd Content und zeigt dabei Ladesymbol
+    if (this.state.impressum === null) {
+      this.loadImpressum();
+      return (
+        <div style={{ textAlign: "center", padding: 20 }}>
+          <CircularProgress />
         </div>
+      );
+    }
+
+    if (this.state.onEdit === true) {
+      return (
+        <ChangeImpressumg
+          user={this.props.user}
+          impressum={this.state.impressum}
+          completeEdit={(reload = false) => {
+            this.setState({
+              onEdit: false,
+              impressum: reload ? null : this.state.impressum
+            });
+          }}
+        />
       );
     }
 
     return (
       <React.Fragment>
         <div className={classes.wrapper}>
-          <Paper
-            className={classes.paper}
-            style={{ width: "unset", minWidth: 300, maxWidth: "90%" }}
-          >
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell align="center">UserID</TableCell>
-                    <TableCell align="center">Rang</TableCell>
-                    <TableCell align="center">PW geändert</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {this.state.userList.map((user, index) => (
-                    <TableRow
-                      onClick={() => {
-                        this.setState({
-                          openUserDialog: true,
-                          chooseUser: user
-                        });
-                      }}
-                      hover
-                      key={index}
-                    >
-                      <TableCell>{user.username}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell align="center">{user.userID}</TableCell>
-                      <TableCell align="center">{user.rank}</TableCell>
-                      <TableCell align="center">
-                        {user.initialPW ? (
-                          <Clear style={{ color: "red" }} />
-                        ) : (
-                          <Check style={{ color: "green" }} />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
+          <Typography variant="h2">Impressum</Typography>
+          {this.state.impressum.angabenGemaess5TMG ? (
+            <AngabenGemaess5TMG
+              angabenGemaess5TMG={this.state.impressum.angabenGemaess5TMG}
+            />
+          ) : null}
+          {this.state.impressum.contact ? (
+            <Kontakt contact={this.state.impressum.contact} />
+          ) : null}
+          {this.state.impressum.verantwortlichFuerDenInhaltNach55Abs2RStV ? (
+            <VerantwortlichFuerDenInhaltNach55Abs2RStV
+              verantwortlichFuerDenInhaltNach55Abs2RStV={
+                this.state.impressum.verantwortlichFuerDenInhaltNach55Abs2RStV
+              }
+            />
+          ) : null}
+          {this.props.user.rank > 1 ? (
+            <Button
+              variant="outlined"
+              onClick={() => this.setState({ onEdit: true })}
+            >
+              Impressum Bearbeiten
+            </Button>
+          ) : null}
         </div>
-        <UserDialog
-          open={this.state.openUserDialog}
-          onClose={() => {
-            this.setState({ openUserDialog: false });
-          }}
-          userOnEdit={this.state.chooseUser}
-          user={this.props.user}
-          removeUser={this.removeUser}
-          changeEmailOrRank={this.changeEmailOrRank}
-        />
-        <Snackbar
-          onClose={() => {
-            this.setState({ deleteAlert: false });
-          }}
-          open={this.state.deleteAlert}
-          message="Löschung Erfolgreich"
-          action={<Delete />}
-        />
       </React.Fragment>
     );
   }
 }
 
-export default withStyles(styles)(withRouter(Impressum));
+//angaben gemäß der Des Telemedie Gesetzt
+function AngabenGemaess5TMG(props) {
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <Typography variant="h5">Angaben gemäß § 5 TMG</Typography>
+      <div style={{ paddingLeft: "7px" }}>
+        <Typography>{props.angabenGemaess5TMG.organisation}</Typography>
+        <Typography>{props.angabenGemaess5TMG.strasse}</Typography>
+        <Typography>{props.angabenGemaess5TMG.spezifizierung}</Typography>
+        <Typography>{props.angabenGemaess5TMG.plzStadt}</Typography>
+      </div>
+      <br />
+      <div style={{ paddingLeft: "7px" }}>
+        <Typography>{props.angabenGemaess5TMG.vereinRegisterNummer}</Typography>
+        <Typography>{props.angabenGemaess5TMG.registerGericht}</Typography>
+      </div>
+      <br />
+      <div style={{ paddingLeft: "7px" }}>
+        <Typography variant="subtitle1">Vertreten durch:</Typography>
+        <Typography>
+          {props.angabenGemaess5TMG.anwaltlicheVertretung}
+        </Typography>
+      </div>
+    </div>
+  );
+}
+
+//Kontakt der Website
+function Kontakt(props) {
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <Typography variant="h5">Kontakt</Typography>
+      <div style={{ paddingLeft: "7px" }}>
+        {props.contact.telefonNummer ? (
+          <Typography>Telefon Nummer: {props.contact.telefonNummer}</Typography>
+        ) : null}
+        {props.contact.email ? (
+          <Typography>Email: {props.contact.email}</Typography>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+//Verantwortlich für die Readaktionellen Leistungen die erbracht werden auf der Website
+function VerantwortlichFuerDenInhaltNach55Abs2RStV(props) {
+  return (
+    <div style={{ marginBottom: "20px" }}>
+      <Typography variant="h5">
+        Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV
+      </Typography>
+      <div style={{ paddingLeft: "7px" }}>
+        <Typography>
+          {props.verantwortlichFuerDenInhaltNach55Abs2RStV.name}
+        </Typography>
+        <Typography>
+          {props.verantwortlichFuerDenInhaltNach55Abs2RStV.strasseHausnummer}
+        </Typography>
+        <Typography>
+          {props.verantwortlichFuerDenInhaltNach55Abs2RStV.spezifizierung}
+        </Typography>
+        <Typography>
+          {props.verantwortlichFuerDenInhaltNach55Abs2RStV.plzStadt}
+        </Typography>
+      </div>
+    </div>
+  );
+}
+//Scheint nicht für uns relevant zu sein
+function SchlichtungsStelle(props) {
+  return (
+    <div>
+      <Typography variant="h5">
+        Verbraucherstreitbeilegung/Universalschlichtungsstelle
+      </Typography>
+      <div style={{ paddingLeft: "7px" }}>
+        <Typography>
+          Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren
+          vor einer Verbraucherschlichtungsstelle teilzunehmen.
+        </Typography>
+      </div>
+    </div>
+  );
+}
+
+export default withStyles(styles)(Impressum);
