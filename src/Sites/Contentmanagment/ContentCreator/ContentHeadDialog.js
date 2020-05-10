@@ -100,6 +100,7 @@ class ContentHeadDialog extends React.Component {
    * sich verändert hat und gib wahrheits wert zurück
    */
   hasToSave = () => {
+    console.log("test");
     if (this.state.choosePicture !== 0) {
       return false;
     }

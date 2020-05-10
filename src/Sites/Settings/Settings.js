@@ -157,7 +157,7 @@ class Settings extends React.Component {
       .post(
         "https://www.buergerverein-rheindoerfer.de/phpTest/SettingsPhp/settings.php",
         {
-          authentifaication: {
+          authentication: {
             email: this.props.user.email,
             password: this.props.user.password
           },

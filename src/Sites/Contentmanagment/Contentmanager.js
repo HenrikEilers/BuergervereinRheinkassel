@@ -57,8 +57,6 @@ class Contentmanager extends React.Component {
       }
     );
 
-    //Abfragen der Content Daten, also aller Daten die benötigt werden um ein thema zu identifizieren
-    //TODO PHP backend erstellen, sowie SQL tabellen die benötigt werden
     postRequest(
       "https://buergerverein-rheilaka.de/phpTest/getContentHeads.php",
       this.props.user,
@@ -382,6 +380,7 @@ class Contentmanager extends React.Component {
         }
       )
       .then(response => {
+        console.log(response.data);
         if (response.data.success === true) {
           this.setState({
             offlineGroup: response.data.data

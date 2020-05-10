@@ -72,8 +72,10 @@ class Login extends React.Component {
       .post(
         "https://www.buergerverein-rheindoerfer.de/phpTest/hi.php",
         {
-          email: this.state.email,
-          password: this.state.password
+          authentication: {
+            email: this.state.email,
+            password: this.state.password
+          }
         },
         {
           headers: {
