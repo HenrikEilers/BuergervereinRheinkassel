@@ -12,7 +12,7 @@ import { postRequest } from "../../actions.js";
 
 import React from "react";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     //border: "solid 2px red",
     //paddingTop: "10px",
@@ -45,6 +45,7 @@ const NATIVE_IMAGE_CONTENT = 2;
 const LINKED_IMAGE_CONTENT = 3;
 const LINK_CONTENT = 4;
 const VIDEO_CONTENT = 5;
+const HEADLINE_CONTENT = 6;
 
 class ContentDisplayer extends React.Component {
   constructor(props) {
@@ -70,12 +71,14 @@ class ContentDisplayer extends React.Component {
         re = this.renderBild(index);
       if (value.ContentTypeID === LINK_CONTENT) re = this.renderLink(index);
       if (value.ContentTypeID === VIDEO_CONTENT) re = this.renderVideo(index);
+      if (value.ContentTypeID === HEADLINE_CONTENT)
+        re = this.renderHeadline(index);
       return <React.Fragment key={index}> {re}</React.Fragment>;
     });
   };
 
   /**rendert ein Text ContentElement */
-  renderText = index => {
+  renderText = (index) => {
     return (
       <React.Fragment key={index}>
         <span style={{ whiteSpace: "pre-wrap" }}>
@@ -86,7 +89,7 @@ class ContentDisplayer extends React.Component {
   };
 
   /**render ein Bild ContentElement  */
-  renderBild = index => {
+  renderBild = (index) => {
     const renderCaption = () => {
       if (this.state.contentBody[index].content === "") {
         return null;
@@ -151,7 +154,7 @@ class ContentDisplayer extends React.Component {
   };
 
   /**rendert ein Link Element */
-  renderLink = index => {
+  renderLink = (index) => {
     return (
       <React.Fragment key={index}>
         {this.state.contentBody[index].paragraph ? (
@@ -193,6 +196,17 @@ class ContentDisplayer extends React.Component {
   };
   //TODO nach Datenschut fragen und den evtl wenn zeit und lust implementieren
   renderVideo = (value, index) => {};
+
+  /**rendert ein Text ContentElement */
+  renderHeadline = (index) => {
+    return (
+      <React.Fragment key={index}>
+        <Typography paragraph variant="h4" style={{ whiteSpace: "pre-wrap" }}>
+          {this.state.contentBody[index].content}
+        </Typography>
+      </React.Fragment>
+    );
+  };
 
   /**loads and redners the Component */
   render() {
@@ -237,7 +251,7 @@ class ContentDisplayer extends React.Component {
         "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getContentBody.php",
         this.props.user,
         this.state.contentHead,
-        response => {
+        (response) => {
           if (response.data.success) {
             this.setState({
               contentBody: response.data.contentBody

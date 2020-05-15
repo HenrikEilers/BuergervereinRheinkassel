@@ -49,7 +49,7 @@ import {
   UPLOAD_GROUP_SELECT
 } from "../constants.js";
 
-const styles = theme => ({
+const styles = (theme) => ({
   hiddenInput: {
     width: "0.1px",
     height: "0.1px",
@@ -98,7 +98,7 @@ class PictureUpload extends React.Component {
             id="date-picker-inline"
             label="Datum"
             value={this.state.picture.pictureDate}
-            onChange={eventDate => {
+            onChange={(eventDate) => {
               this.setState({
                 picture: {
                   ...this.state.picture,
@@ -122,10 +122,10 @@ class PictureUpload extends React.Component {
     );
   };
 
-  onChange = event => {
+  onChange = (event) => {
     const reader = new FileReader();
-    reader.onload = (file => {
-      return e => {
+    reader.onload = ((file) => {
+      return (e) => {
         const img = new Image();
         img.onload = () => {
           const tmp = file.name.split(".", 2);
@@ -166,7 +166,7 @@ class PictureUpload extends React.Component {
       this.state.picture.uploadHeight,
       this.state.picture.pictureDate.toISOString().substring(0, 10),
       this.props.uploadGroups,
-      response => {
+      (response) => {
         console.log(response);
         if (response.data.success) {
           this.setState({
@@ -179,7 +179,7 @@ class PictureUpload extends React.Component {
           });
         }
       },
-      progress => {
+      (progress) => {
         this.setState({ progress: progress });
       }
     );
@@ -223,6 +223,19 @@ class PictureUpload extends React.Component {
 
           <Collapse in={this.state.uploadReady}>
             <div style={{ marginBottom: 7 }}>
+              <Paper
+                style={{
+                  padding: 10,
+                  marginBottom: 15,
+                  border: "solid red 2px",
+                  textAlign: "center"
+                }}
+              >
+                <Typography>
+                  Beim Hochladen von Bildern sind das Urheberrecht und die
+                  Persönlichkeitsrechte zu Beachten
+                </Typography>
+              </Paper>
               <TextField
                 error={this.state.nameError}
                 style={{ marginBottom: "7px" }}
@@ -230,7 +243,7 @@ class PictureUpload extends React.Component {
                 fullWidth
                 label="Name des Bildes"
                 value={this.state.picture.uploadName}
-                onChange={event => {
+                onChange={(event) => {
                   const regex = /^[\w-]*$/;
                   console.log(regex.test(event.target.value));
                   this.setState({
@@ -331,7 +344,15 @@ class PictureUpload extends React.Component {
             Wähle Bild
           </Button>
           <Collapse in={this.state.success}>
-            <Paper>
+            <Paper
+              style={{
+                marginTop: 10,
+                backgroundColor: "green",
+                color: "white",
+                textAlign: "center",
+                padding: 10
+              }}
+            >
               <Typography>Upload war erfolgreich</Typography>
             </Paper>
           </Collapse>

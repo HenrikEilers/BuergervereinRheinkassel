@@ -5,7 +5,7 @@ import { postRequest } from "../../actions.js";
 
 import { withStyles, withTheme, Button } from "@material-ui/core";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 class Poll extends React.Component {
   constructor(props) {
@@ -14,11 +14,11 @@ class Poll extends React.Component {
   }
 
   sendTest = () => {
-    const callback = response => {
+    const callback = (response) => {
       console.log(response);
     };
     postRequest(
-      "https://www.buergerverein-rheindoerfer.de/phpTest/addUser/test.php",
+      "https://www.buergerverein-rheindoerfer.de/phpTest/test.php",
       this.props.user,
       {},
       callback
@@ -28,7 +28,17 @@ class Poll extends React.Component {
   //render methode
   render() {
     const { classes, user } = this.props;
-    return <Button onClick={this.sendTest}>Test</Button>;
+    return (
+      <React.Fragment>
+        <a
+          href="https://www.buergerverein-rheindoerfer.de/phpTest/test.php"
+          download
+        >
+          test
+        </a>
+        <Button onClick={this.sendTest}>Test</Button>
+      </React.Fragment>
+    );
   }
 }
 

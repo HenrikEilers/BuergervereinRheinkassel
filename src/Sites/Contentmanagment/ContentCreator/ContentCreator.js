@@ -27,21 +27,27 @@ import SubjectIcon from "@material-ui/icons/Subject";
 import PhotoIcon from "@material-ui/icons/Photo";
 import LinkIcon from "@material-ui/icons/Link";
 import YouTubeIcon from "@material-ui/icons/YouTube";
+import TextFieldsIcon from "@material-ui/icons/TextFields";
 
 import ImageSearchIcon from "@material-ui/icons/ImageSearch";
 
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 import ContentDisplayer from "../../../CommonComponents/ContentDisplayer/ContentDisplayer";
 
-import PictureDialog from "./PictureDialog";
+import PictureDialog from "./ContentTypes/Picture/PictureDialog";
 import ContentHeadDialog from "./tmpContentHeadDialog";
 
 import { postRequest } from "../../../actions.js";
 
+import Link from "./ContentTypes/Link/Link.js";
+import Picture from "./ContentTypes/Picture/Picture.js";
+import Text from "./ContentTypes/Text/Text.js";
+import Headline from "./ContentTypes/Headline/Headline.js";
+
 import React from "react";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     //border: "solid 2px red",
     //paddingTop: "10px",
@@ -129,6 +135,7 @@ const NATIVE_IMAGE_CONTENT = 2;
 const LINKED_IMAGE_CONTENT = 3;
 const LINK_CONTENT = 4;
 const VIDEO_CONTENT = 5;
+const HEADLINE_CONTENT = 6;
 
 class ContentCreator extends React.Component {
   constructor(props) {
@@ -202,7 +209,7 @@ class ContentCreator extends React.Component {
   };
 
   /**erstellt Kopie von Objekten */
-  bestCopyEver = src => {
+  bestCopyEver = (src) => {
     return JSON.parse(JSON.stringify(src));
   };
 
@@ -216,7 +223,7 @@ class ContentCreator extends React.Component {
   };
 
   /**fügt neues ContentBodyElement  ein */
-  addToBody = index => {
+  addToBody = (index) => {
     const emptyElement = {
       ContentID: this.props.contentHead.contentID,
       ContentBodyID: -1,
@@ -245,7 +252,7 @@ class ContentCreator extends React.Component {
   };
 
   /**löscht ContentBodyElement */
-  deleteFromBody = index => {
+  deleteFromBody = (index) => {
     var tmpContentBody = this.state.contentBody;
     tmpContentBody.splice(index, 1);
     tmpContentBody = tmpContentBody.map((value, index) => {
@@ -260,7 +267,8 @@ class ContentCreator extends React.Component {
   /** rendert eine Auswahl menü das einem ermöglicht
    *  zu bestimmen welche art von content hinzugefügt
    *  werden sollte */
-  pickContent = index => {
+
+  pickContent = (index) => {
     return (
       <div style={{ margin: "10px 0px" }}>
         <Grid
@@ -270,6 +278,31 @@ class ContentCreator extends React.Component {
           alignItems="center"
           spacing={2}
         >
+          <Grid item>
+            <div style={{ position: "relative" }}>
+              <ButtonBase
+                onClick={() => {
+                  const tmpContentBody = this.state.contentBody;
+                  tmpContentBody[index].ContentTypeID = HEADLINE_CONTENT;
+                  this.setState({ contentBody: tmpContentBody });
+                }}
+              >
+                <Paper
+                  square
+                  elevation={10}
+                  className={this.props.classes.menuPick}
+                >
+                  <TextFieldsIcon style={{ width: "50px", height: "100%" }} />
+                  <Typography
+                    className={this.props.classes.labelNewContent}
+                    variant="caption"
+                  >
+                    Überschrift
+                  </Typography>
+                </Paper>
+              </ButtonBase>
+            </div>
+          </Grid>
           <Grid item>
             <div style={{ position: "relative" }}>
               <ButtonBase
@@ -398,20 +431,65 @@ class ContentCreator extends React.Component {
     );
   };
 
+  changeContentPiece = (value, index) => {
+    const tmpContentBody = this.state.contentBody;
+    tmpContentBody[index] = value;
+    this.setState({ contentBody: tmpContentBody });
+  };
+
   /** rendert den ConentBodyEditor. Hier wird zwischen den verschiedenen
    *  ContentArten unterschieden und sie werden in unterschiedlichen
    *  Methoden gerendert */
   renderContentBody = () => {
     return this.state.contentBody.map((value, index) => {
       var re = null;
-      if (value.ContentTypeID === TEXT_CONTENT) re = this.renderText(index);
+      if (value.ContentTypeID === TEXT_CONTENT)
+        re = (
+          <Text
+            onChangeElements={this.state.onChangeElements}
+            text={value}
+            changeContentPiece={(value) =>
+              this.changeContentPiece(value, index)
+            }
+          />
+        );
       if (
         value.ContentTypeID === NATIVE_IMAGE_CONTENT ||
         value.ContentTypeID === LINKED_IMAGE_CONTENT
       )
-        re = this.renderBild(index);
-      if (value.ContentTypeID === LINK_CONTENT) re = this.renderLink(index);
+        re = (
+          <Picture
+            user={this.props.user}
+            onChangeElements={this.state.onChangeElements}
+            picture={value}
+            changeContentPiece={(value) =>
+              this.changeContentPiece(value, index)
+            }
+          />
+        );
+      //if (value.ContentTypeID === LINK_CONTENT) re = this.renderLink(index);
+      if (value.ContentTypeID === LINK_CONTENT)
+        re = (
+          <Link
+            onChangeElements={this.state.onChangeElements}
+            link={value}
+            changeContentPiece={(value) =>
+              this.changeContentPiece(value, index)
+            }
+          />
+        );
       if (value.ContentTypeID === VIDEO_CONTENT) re = this.renderVideo(index);
+      if (value.ContentTypeID === HEADLINE_CONTENT)
+        re = (
+          <Headline
+            onChangeElements={this.state.onChangeElements}
+            headline={value}
+            changeContentPiece={(value) =>
+              this.changeContentPiece(value, index)
+            }
+          />
+        );
+
       return (
         <div
           key={index}
@@ -496,7 +574,7 @@ class ContentCreator extends React.Component {
   };
 
   /**rendert ein Text ContentElement */
-  renderText = index => {
+  renderText = (index) => {
     return (
       <React.Fragment key={index}>
         <InputBase
@@ -509,7 +587,7 @@ class ContentCreator extends React.Component {
             input: this.props.classes.p
           }}
           value={this.state.contentBody[index].content}
-          onChange={event => {
+          onChange={(event) => {
             let tmp = this.state.contentBody;
             tmp[index].content = event.target.value;
             this.setState({ contentBody: tmp });
@@ -521,7 +599,7 @@ class ContentCreator extends React.Component {
 
   /**render ein Bild ContentElement und den PictureDialog
    *  um das Element verändern zu können */
-  renderBild = index => {
+  renderBild = (index) => {
     const renderCaption = () => {
       if (this.state.contentBody[index].content === "") {
         return null;
@@ -605,7 +683,7 @@ class ContentCreator extends React.Component {
         <div>{renderCaption()}</div>
         <PictureDialog
           pictureContent={this.state.contentBody[index]}
-          changeSave={this.changeSave}
+          changeSave={(value) => this.changeContentPiece(value, index)}
           open={
             this.state.pictureDialogOpen &&
             this.state.pictureDialogIndex === index
@@ -625,145 +703,6 @@ class ContentCreator extends React.Component {
     );
   };
 
-  /**rendert ein Link Element */
-  renderLink = index => {
-    return (
-      <React.Fragment key={index}>
-        <Button
-          disabled={this.state.onChangeElements}
-          fullWidth
-          variant="outlined"
-          style={{ display: "inline" }}
-          onClick={() => {
-            this.setState({
-              openLinkDialog: index,
-              tmpLinkName: this.state.contentBody[index].displayed,
-              tmpLink: this.state.contentBody[index].link,
-              tmpParagraph: this.state.contentBody[index].paragraph
-            });
-          }}
-        >
-          LINK:
-          <span
-            className={
-              !this.state.onChangeElements ? this.props.classes.link : null
-            }
-          >
-            {this.state.contentBody[index].displayed}
-          </span>
-        </Button>
-        <Dialog
-          open={this.state.openLinkDialog === index}
-          fullWidth
-          maxWidth="md"
-          onClose={() => {
-            this.setState({ openLinkDialog: -1 });
-          }}
-          onExit={() => {
-            this.setState({
-              tmpLinkName: "",
-              tmpLink: "",
-              tmpParagraph: false
-            });
-          }}
-        >
-          <div style={{ padding: "15px" }}>
-            <Collapse in={this.state.tmpLink !== ""}>
-              <Button
-                variant="outlined"
-                target="_blank"
-                href={this.state.tmpLink}
-                fullWidth
-                style={{ marginBottom: 15, padding: 15 }}
-              >
-                Benutze Link
-              </Button>
-            </Collapse>
-            <TextField
-              style={{ paddingBottom: 15 }}
-              fullWidth
-              variant="outlined"
-              label="Angezeigter Text"
-              value={this.state.tmpLinkName}
-              onChange={event => {
-                this.setState({ tmpLinkName: event.target.value });
-              }}
-            />
-            <Divider style={{ marginBottom: 15 }} />
-            <TextField
-              style={{ paddingBottom: 7 }}
-              fullWidth
-              variant="outlined"
-              label="Link"
-              value={this.state.tmpLink}
-              onChange={event => {
-                this.setState({ tmpLink: event.target.value });
-              }}
-            />
-            <div
-              style={{
-                display: "-webkit-flex",
-                alignItems: "center",
-                WebkitAlignItems: "center",
-                padding: "0px 15px"
-              }}
-            >
-              <Checkbox
-                color="primary"
-                checked={this.state.tmpParagraph}
-                onChange={event => {
-                  this.setState({ tmpParagraph: event.target.checked });
-                }}
-              />
-
-              <Typography
-                style={{
-                  textAlign: "center",
-                  width: "100%"
-                }}
-              >
-                Der Link soll als eigener Paragraph dargestellt werden
-              </Typography>
-            </div>
-            <Collapse
-              in={
-                (this.state.tmpLinkName !==
-                  this.state.contentBody[index].displayed ||
-                  this.state.tmpLink !== this.state.contentBody[index].link ||
-                  this.state.tmpParagraph !==
-                    this.state.contentBody[index].paragraph) &&
-                this.state.tmpLinkName !== "" &&
-                this.state.tmpLink !== ""
-              }
-            >
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => {
-                  const tmp = this.state.contentBody;
-                  tmp[index].displayed = this.state.tmpLinkName;
-                  tmp[index].link = this.state.tmpLink;
-                  tmp[index].paragraph = this.state.tmpParagraph;
-                  tmp[index].content = -1;
-                  this.setState({
-                    contentBody: tmp
-                  });
-                }}
-                style={{
-                  backgroundColor: "green",
-                  color: "white",
-                  padding: 15,
-                  marginTop: 7
-                }}
-              >
-                Hinzufügen
-              </Button>
-            </Collapse>
-          </div>
-        </Dialog>
-      </React.Fragment>
-    );
-  };
   //TODO nach Datenschut fragen und den evtl wenn zeit und lust implementieren
   renderVideo = (value, index) => {};
 
@@ -796,7 +735,7 @@ class ContentCreator extends React.Component {
   /**onSave  ist zum speichern der Daten dar.
    * sendet einen Axios post request an den server um die Datenbank zu verändern */
   onSave = () => {
-    const callback = response => {
+    const callback = (response) => {
       console.log(response);
       if (response.data.success) {
         this.props.updateContentHeads(response.data.obj.load.contentHead);
@@ -857,7 +796,7 @@ class ContentCreator extends React.Component {
           }}
           placeholder="Überschrift"
           value={this.state.contentHead.ueberschrift}
-          onChange={event => {
+          onChange={(event) => {
             this.setState({
               contentHead: {
                 ...this.state.contentHead,
@@ -876,7 +815,7 @@ class ContentCreator extends React.Component {
           }}
           placeholder="Beschreibung"
           value={this.state.contentHead.beschreibungText}
-          onChange={event => {
+          onChange={(event) => {
             this.setState({
               contentHead: {
                 ...this.state.contentHead,
@@ -937,7 +876,7 @@ class ContentCreator extends React.Component {
           user={this.props.user}
           contentHead={this.state.contentHead}
           addToContentHead={this.addToContentHead}
-          setChoosenContentGroups={value => {
+          setChoosenContentGroups={(value) => {
             this.setState({ choosenContentGroups: value });
           }}
           choosenContentGroups={this.state.choosenContentGroups}
@@ -1061,7 +1000,7 @@ class ContentCreator extends React.Component {
         "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getContentBody.php",
         this.props.user,
         { ContentID: this.state.contentHead.ContentID },
-        response => {
+        (response) => {
           if (response.data.success) {
             this.setState({
               siteLoaded: true,
