@@ -115,7 +115,7 @@ class tmpContentHeadDialog extends React.Component {
    * sich verändert hat und gib wahrheits wert zurück
    */
   hasToSave = () => {
-    if (this.state.stateOfDialog !== 0) {
+    if (this.state.stateOfDialog !== EDIT_CONTENTHEAD) {
       return false;
     }
     if (this.state.tmpContentHead.name === "") {
@@ -629,6 +629,7 @@ class tmpContentHeadDialog extends React.Component {
         { ContentID: this.props.contentHead.ContentID },
         response => {
           if (response.data.success) {
+            console.log(response.data);
             response.data.groupsOfContent.sort();
             this.setState({
               contentGroups: response.data.groups,

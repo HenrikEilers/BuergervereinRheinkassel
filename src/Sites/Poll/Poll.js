@@ -18,7 +18,7 @@ class Poll extends React.Component {
       console.log(response);
     };
     postRequest(
-      "https://www.buergerverein-rheindoerfer.de/phpTest/addUser/test.php",
+      "https://www.buergerverein-rheindoerfer.de/phpTest/test.php",
       this.props.user,
       {},
       callback
@@ -28,7 +28,17 @@ class Poll extends React.Component {
   //render methode
   render() {
     const { classes, user } = this.props;
-    return <Button onClick={this.sendTest}>Test</Button>;
+    return (
+      <React.Fragment>
+        <a
+          href="https://www.buergerverein-rheindoerfer.de/phpTest/test.php"
+          download
+        >
+          test
+        </a>
+        <Button onClick={this.sendTest}>Test</Button>
+      </React.Fragment>
+    );
   }
 }
 

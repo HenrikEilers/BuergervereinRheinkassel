@@ -17,7 +17,7 @@ import {
   LinearProgress
 } from "@material-ui/core";
 
-import PicturePicker from "../../../CommonComponents/PicturePicker/PicturePicker";
+import PicturePicker from "../../../../../CommonComponents/PicturePicker/PicturePicker";
 
 import Search from "@material-ui/icons/Search";
 
@@ -25,11 +25,11 @@ import PublishIcon from "@material-ui/icons/Publish";
 
 import { withRouter } from "react-router-dom";
 
-import { postRequest, postUploadPicture } from "../../../actions.js";
+import { postRequest, postUploadPicture } from "../../../../../actions.js";
 
 import React from "react";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     backgroundColor: theme.palette.background.paper
   },
@@ -104,15 +104,8 @@ class PictureDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      picture:
-        props.pictureContent.ContentTypeID === 2
-          ? { ...props.pictureContent }
-          : null,
+      picture: props.pictureContent,
       stateOfDialog: props.stateOfDialog,
-      link:
-        props.pictureContent.ContentTypeID === 3
-          ? props.pictureContent.content
-          : "",
       getloadingErrorPicure: true,
       extendInfo: false
     };
@@ -120,6 +113,7 @@ class PictureDialog extends React.Component {
 
   renderDialogContent = () => {
     if (EMPTY_PICTURE_START === this.state.stateOfDialog) {
+      console.log(this.props.stateOfDialog);
       return this.renderEmptyPictureStart();
     }
     if (OWNPICTURE_START === this.state.stateOfDialog) {
@@ -130,7 +124,7 @@ class PictureDialog extends React.Component {
     }
   };
 
-  /**rendert den Dialog wenn kein Bild oder ein Bild Von einer anderen Quelle ausgewählt ist. */
+  /**rendert den Dialog wenn kein Bild oder ein Bild Von einer anderen Quelle ausgewÃ¤hlt ist. */
   renderEmptyPictureStart = () => {
     const { classes } = this.props;
     return (
@@ -139,32 +133,40 @@ class PictureDialog extends React.Component {
           <Button
             onClick={() => {
               this.setState({
-                stateOfDialog: CHOOSE_PICTURE
+                stateOfDialog: CHOOSE_PICTURE,
+                picture: {
+                  ...this.state.picture,
+                  ContentTypeID: 2,
+                  content: ""
+                }
               });
             }}
             className={classes.newPicture1}
             fullWidth
             variant="outlined"
           >
-            Bild Auswählen
+            Bild AuswÃ¤hlen
           </Button>
         </div>
         <Divider style={{ margin: "0px 15px" }} />
         <div className={classes.newLink}>
           <div className={classes.newLink1}>
-            <Typography variant="caption">Bildlink einfügen</Typography>
+            <Typography variant="caption">Bildlink einfÃ¼gen</Typography>
             <TextField
-              value={this.state.link}
-              onChange={event => {
+              value={this.state.picture.content}
+              onChange={(event) => {
                 this.setState({
-                  link: event.target.value,
+                  picture: {
+                    ...this.state.picture,
+                    content: event.target.value
+                  },
                   getloadingErrorPicure: true
                 });
               }}
               variant="outlined"
               fullWidth
             >
-              Wähle Bild
+              WÃ¤hle Bild
             </TextField>
           </div>
           <Collapse in={!this.state.getloadingErrorPicure}>
@@ -179,8 +181,8 @@ class PictureDialog extends React.Component {
                 }}
                 id="myImg"
                 width="100%"
-                src={this.state.link}
-                alt={this.props.pictureContent.name}
+                src={this.state.picture.content}
+                alt={this.state.picture.content}
               />
             </div>
           </Collapse>
@@ -242,7 +244,7 @@ class PictureDialog extends React.Component {
               fullWidth
               variant="outlined"
             >
-              Bild Ändern
+              Bild Ãndern
             </Button>
           </div>
 
@@ -252,14 +254,18 @@ class PictureDialog extends React.Component {
               onClick={() => {
                 this.setState({
                   stateOfDialog: EMPTY_PICTURE_START,
-                  picture: null
+                  picture: {
+                    ...this.state.picture,
+                    ContentTypeID: 3,
+                    content: ""
+                  }
                 });
               }}
               className={classes.newPicture1}
               fullWidth
               variant="outlined"
             >
-              Link Einfügen
+              Link EinfÃ¼gen
             </Button>
           </div>
         </div>
@@ -270,10 +276,12 @@ class PictureDialog extends React.Component {
   renderChoosePicture = () => {
     return (
       <PicturePicker
-        getPicture={picture =>
+        getPicture={(picture) =>
           this.setState({
-            picture,
-            open: false,
+            picture: {
+              ...this.state.picture,
+              ...picture
+            },
             stateOfDialog: OWNPICTURE_START
           })
         }
@@ -284,37 +292,24 @@ class PictureDialog extends React.Component {
   };
 
   changeSave = () => {
-    if (this.state.stateOfDialog === OWNPICTURE_START) {
-      this.props.changeSave(
-        2,
-        this.props.pictureContent.reihenfolge,
-        this.state.picture
-      );
-    }
-    if (this.state.stateOfDialog === EMPTY_PICTURE_START) {
-      this.props.changeSave(
-        3,
-        this.props.pictureContent.reihenfolge,
-        this.state.link
-      );
-    }
+    this.props.changeSave(this.state.picture);
     this.props.onClose();
   };
 
   hasToSave = () => {
     /**Voraussetzungen:
      * -Nur in den Phasen OWNPICTURE_START und EMPTY_PICTURE_START darf gespeichert werden
-     * -Content muss sich verändert haben
+     * -Content muss sich verÃ¤ndert haben
      * -Link muss funktionieren
      */
 
     //Phase OWNPICTURE_START ist aktiv
     if (this.state.stateOfDialog === OWNPICTURE_START) {
-      //Vor her war ein Link ausgewählt
+      //Vor her war ein Link ausgewÃ¤hlt
       if (this.props.pictureContent.ContentTypeID === 3) {
         return true;
       } else {
-        //Anderes Bild muss gewählt sein
+        //Anderes Bild muss gewÃ¤hlt sein
         if (
           this.props.pictureContent.pictureID !== this.state.picture.pictureID
         ) {
@@ -328,12 +323,14 @@ class PictureDialog extends React.Component {
     if (this.state.stateOfDialog === EMPTY_PICTURE_START) {
       //Der Link zeigt auf ein Reales Bild
       if (this.state.getloadingErrorPicure === false) {
-        //Vor her war ein Bild ausgewählt
+        //Vor her war ein Bild ausgewÃ¤hlt
         if (this.props.pictureContent.ContentTypeID === 2) {
           return true;
         } else {
-          //Anderer Link muss ausgewählt worden sein
-          if (this.props.pictureContent.content !== this.state.link) {
+          //Anderer Link muss ausgewÃ¤hlt worden sein
+          if (
+            this.props.pictureContent.content !== this.state.picture.content
+          ) {
             return true;
           } else {
             return false;
@@ -356,18 +353,12 @@ class PictureDialog extends React.Component {
           onClose={this.props.onClose}
           onExited={() => {
             this.setState({
-              picture:
-                this.props.pictureContent.ContentTypeID === 2
-                  ? { ...this.props.pictureContent }
-                  : null,
+              picture: this.props.pictureContent,
               stateOfDialog: this.props.stateOfDialog,
-              link:
-                this.props.pictureContent.ContentTypeID === 3
-                  ? this.props.pictureContent.content
-                  : "",
               getloadingErrorPicure: true,
               extendInfo: false
             });
+            this.props.onExit();
           }}
         >
           <Collapse
@@ -385,7 +376,7 @@ class PictureDialog extends React.Component {
                 height: "45px"
               }}
             >
-              <Typography variant="button">Hinzufügen</Typography>
+              <Typography variant="button">HinzufÃ¼gen</Typography>
             </ButtonBase>
           </Collapse>
           <div>{this.renderDialogContent()}</div>

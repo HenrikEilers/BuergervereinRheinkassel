@@ -223,6 +223,19 @@ class PictureUpload extends React.Component {
 
           <Collapse in={this.state.uploadReady}>
             <div style={{ marginBottom: 7 }}>
+              <Paper
+                style={{
+                  padding: 10,
+                  marginBottom: 15,
+                  border: "solid red 2px",
+                  textAlign: "center"
+                }}
+              >
+                <Typography>
+                  Beim Hochladen von Bildern sind das Urheberrecht und die
+                  Persönlichkeitsrechte zu Beachten
+                </Typography>
+              </Paper>
               <TextField
                 error={this.state.nameError}
                 style={{ marginBottom: "7px" }}
@@ -331,7 +344,15 @@ class PictureUpload extends React.Component {
             Wähle Bild
           </Button>
           <Collapse in={this.state.success}>
-            <Paper>
+            <Paper
+              style={{
+                marginTop: 10,
+                backgroundColor: "green",
+                color: "white",
+                textAlign: "center",
+                padding: 10
+              }}
+            >
               <Typography>Upload war erfolgreich</Typography>
             </Paper>
           </Collapse>

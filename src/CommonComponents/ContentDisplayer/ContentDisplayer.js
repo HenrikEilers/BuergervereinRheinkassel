@@ -45,6 +45,7 @@ const NATIVE_IMAGE_CONTENT = 2;
 const LINKED_IMAGE_CONTENT = 3;
 const LINK_CONTENT = 4;
 const VIDEO_CONTENT = 5;
+const HEADLINE_CONTENT = 6;
 
 class ContentDisplayer extends React.Component {
   constructor(props) {
@@ -70,6 +71,8 @@ class ContentDisplayer extends React.Component {
         re = this.renderBild(index);
       if (value.ContentTypeID === LINK_CONTENT) re = this.renderLink(index);
       if (value.ContentTypeID === VIDEO_CONTENT) re = this.renderVideo(index);
+      if (value.ContentTypeID === HEADLINE_CONTENT)
+        re = this.renderHeadline(index);
       return <React.Fragment key={index}> {re}</React.Fragment>;
     });
   };
@@ -193,6 +196,17 @@ class ContentDisplayer extends React.Component {
   };
   //TODO nach Datenschut fragen und den evtl wenn zeit und lust implementieren
   renderVideo = (value, index) => {};
+
+  /**rendert ein Text ContentElement */
+  renderHeadline = index => {
+    return (
+      <React.Fragment key={index}>
+        <Typography paragraph variant="h4" style={{ whiteSpace: "pre-wrap" }}>
+          {this.state.contentBody[index].content}
+        </Typography>
+      </React.Fragment>
+    );
+  };
 
   /**loads and redners the Component */
   render() {
