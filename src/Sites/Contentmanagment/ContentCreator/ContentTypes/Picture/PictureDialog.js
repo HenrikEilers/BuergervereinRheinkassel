@@ -29,7 +29,7 @@ import { postRequest, postUploadPicture } from "../../../../../actions.js";
 
 import React from "react";
 
-const styles = (theme) => ({
+const styles = theme => ({
   root: {
     backgroundColor: theme.palette.background.paper
   },
@@ -124,7 +124,7 @@ class PictureDialog extends React.Component {
     }
   };
 
-  /**rendert den Dialog wenn kein Bild oder ein Bild Von einer anderen Quelle ausgewÃ¤hlt ist. */
+  /**rendert den Dialog wenn kein Bild oder ein Bild Von einer anderen Quelle ausgewählt ist. */
   renderEmptyPictureStart = () => {
     const { classes } = this.props;
     return (
@@ -145,16 +145,16 @@ class PictureDialog extends React.Component {
             fullWidth
             variant="outlined"
           >
-            Bild AuswÃ¤hlen
+            Bild Auswählen
           </Button>
         </div>
         <Divider style={{ margin: "0px 15px" }} />
         <div className={classes.newLink}>
           <div className={classes.newLink1}>
-            <Typography variant="caption">Bildlink einfÃ¼gen</Typography>
+            <Typography variant="caption">Bildlink einfügen</Typography>
             <TextField
               value={this.state.picture.content}
-              onChange={(event) => {
+              onChange={event => {
                 this.setState({
                   picture: {
                     ...this.state.picture,
@@ -166,7 +166,7 @@ class PictureDialog extends React.Component {
               variant="outlined"
               fullWidth
             >
-              WÃ¤hle Bild
+              Wähle Bild
             </TextField>
           </div>
           <Collapse in={!this.state.getloadingErrorPicure}>
@@ -244,7 +244,7 @@ class PictureDialog extends React.Component {
               fullWidth
               variant="outlined"
             >
-              Bild Ãndern
+              Bild Ändern
             </Button>
           </div>
 
@@ -265,7 +265,7 @@ class PictureDialog extends React.Component {
               fullWidth
               variant="outlined"
             >
-              Link EinfÃ¼gen
+              Link Einfügen
             </Button>
           </div>
         </div>
@@ -276,7 +276,7 @@ class PictureDialog extends React.Component {
   renderChoosePicture = () => {
     return (
       <PicturePicker
-        getPicture={(picture) =>
+        getPicture={picture =>
           this.setState({
             picture: {
               ...this.state.picture,
@@ -299,17 +299,17 @@ class PictureDialog extends React.Component {
   hasToSave = () => {
     /**Voraussetzungen:
      * -Nur in den Phasen OWNPICTURE_START und EMPTY_PICTURE_START darf gespeichert werden
-     * -Content muss sich verÃ¤ndert haben
+     * -Content muss sich verändert haben
      * -Link muss funktionieren
      */
 
     //Phase OWNPICTURE_START ist aktiv
     if (this.state.stateOfDialog === OWNPICTURE_START) {
-      //Vor her war ein Link ausgewÃ¤hlt
+      //Vor her war ein Link ausgewählt
       if (this.props.pictureContent.ContentTypeID === 3) {
         return true;
       } else {
-        //Anderes Bild muss gewÃ¤hlt sein
+        //Anderes Bild muss gewählt sein
         if (
           this.props.pictureContent.pictureID !== this.state.picture.pictureID
         ) {
@@ -323,11 +323,11 @@ class PictureDialog extends React.Component {
     if (this.state.stateOfDialog === EMPTY_PICTURE_START) {
       //Der Link zeigt auf ein Reales Bild
       if (this.state.getloadingErrorPicure === false) {
-        //Vor her war ein Bild ausgewÃ¤hlt
+        //Vor her war ein Bild ausgewählt
         if (this.props.pictureContent.ContentTypeID === 2) {
           return true;
         } else {
-          //Anderer Link muss ausgewÃ¤hlt worden sein
+          //Anderer Link muss ausgewählt worden sein
           if (
             this.props.pictureContent.content !== this.state.picture.content
           ) {
@@ -376,7 +376,7 @@ class PictureDialog extends React.Component {
                 height: "45px"
               }}
             >
-              <Typography variant="button">HinzufÃ¼gen</Typography>
+              <Typography variant="button">Hinzufügen</Typography>
             </ButtonBase>
           </Collapse>
           <div>{this.renderDialogContent()}</div>
