@@ -10,12 +10,8 @@ import {
   Typography
 } from "@material-ui/core";
 
-import { withRouter } from "react-router-dom";
-
-import { postRequest } from "../../../../../actions.js";
-
 import React from "react";
-const styles = theme => ({
+const styles = (theme) => ({
   link: {
     color: "blue",
     "&:hover": {
@@ -36,7 +32,6 @@ class Link extends React.Component {
   compareObject = (object1, object2) => {
     for (const [prop, value] of Object.entries(object1)) {
       if (typeof value === "object" && value !== null) {
-        console.log(prop);
         if (this.compareObject(value, object2[prop]) === true) {
           return true;
         }
@@ -105,7 +100,7 @@ class Link extends React.Component {
               variant="outlined"
               label="Angezeigter Text"
               value={this.state.link.displayed}
-              onChange={event => {
+              onChange={(event) => {
                 this.setState({
                   link: { ...this.state.link, displayed: event.target.value }
                 });
@@ -118,7 +113,7 @@ class Link extends React.Component {
               variant="outlined"
               label="Link"
               value={this.state.link.link}
-              onChange={event => {
+              onChange={(event) => {
                 this.setState({
                   link: { ...this.state.link, link: event.target.value }
                 });
@@ -135,7 +130,7 @@ class Link extends React.Component {
               <Checkbox
                 color="primary"
                 checked={this.state.link.paragraph}
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({
                     link: {
                       ...this.state.link,

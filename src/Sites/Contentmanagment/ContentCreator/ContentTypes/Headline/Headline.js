@@ -24,10 +24,6 @@ const styles = (theme) => ({
 });
 
 class Headline extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <InputBase

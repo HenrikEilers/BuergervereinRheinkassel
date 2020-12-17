@@ -2,8 +2,6 @@ import { withStyles } from "@material-ui/core/styles";
 
 import { InputBase } from "@material-ui/core";
 
-import { withRouter, Link } from "react-router-dom";
-
 import React from "react";
 
 const styles = (theme) => ({
@@ -25,10 +23,6 @@ const styles = (theme) => ({
 });
 
 class Text extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <InputBase
