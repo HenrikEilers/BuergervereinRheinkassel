@@ -2,19 +2,20 @@ import {
   withStyles,
   Paper,
   Typography,
-  CircularProgress,
-  TextField,
   InputBase,
   Collapse,
-  Button
+  Button,
+  Dialog,
+  CircularProgress
 } from "@material-ui/core";
 
 import { postRequest } from "../../actions.js";
 
-import React from "react";
+import React, { useState } from "react";
 import {} from "@material-ui/icons";
+import FileBrowser from "../../CommonComponents/Files/FileBrowser.js";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     textAlign: "left",
     //border: "solid 2px red",
@@ -47,27 +48,6 @@ class ChangeImpressumg extends React.Component {
       errorText: ""
     };
   }
-
-  loadImpressum = () => {
-    const callback = response => {
-      if (response.data.success) {
-        this.setState({
-          impressum: response.data.impressum
-        });
-      } else {
-        this.setState({
-          error: true,
-          errorText: response.data.errortext
-        });
-      }
-    };
-    postRequest(
-      "https://www.buergerverein-rheindoerfer.de/phpTest/getTopic/getTopic.php",
-      this.props.user,
-      { name: this.props.history.location.pathname.split("/")[2] },
-      callback
-    );
-  };
 
   changeInput = (prop, value) => {
     const save = this.compareObject(
@@ -117,8 +97,7 @@ class ChangeImpressumg extends React.Component {
   };
   submitImpressum = () => {
     const load = this.getDifference(this.state.impressum, this.props.impressum);
-    const callback = response => {
-      console.log(response.data);
+    const callback = (response) => {
       if (response.data.success) {
         this.props.completeEdit(true);
       } else {
@@ -162,16 +141,18 @@ class ChangeImpressumg extends React.Component {
           <AngabenGemaess5TMG
             classes={this.props.classes}
             angabenGemaess5TMG={this.state.impressum.angabenGemaess5TMG}
-            changeInput={value => this.changeInput("angabenGemaess5TMG", value)}
+            changeInput={(value) =>
+              this.changeInput("angabenGemaess5TMG", value)
+            }
           />
           <Kontakt
             classes={this.props.classes}
             contact={this.state.impressum.contact}
-            changeInput={value => this.changeInput("contact", value)}
+            changeInput={(value) => this.changeInput("contact", value)}
           />
           <VerantwortlichFuerDenInhaltNach55Abs2RStV
             classes={this.props.classes}
-            changeInput={value =>
+            changeInput={(value) =>
               this.changeInput(
                 "verantwortlichFuerDenInhaltNach55Abs2RStV",
                 value
@@ -179,6 +160,13 @@ class ChangeImpressumg extends React.Component {
             }
             verantwortlichFuerDenInhaltNach55Abs2RStV={
               this.state.impressum.verantwortlichFuerDenInhaltNach55Abs2RStV
+            }
+          />
+          <DatenschutzErklaerung
+            user={this.props.user}
+            changeInput={(value) => this.changeInput("Datenschutz", value)}
+            DatenschutzErklaerung={
+              this.state.impressum.Datenschutz.DatenschutzErklaerung
             }
           />
         </div>
@@ -189,9 +177,6 @@ class ChangeImpressumg extends React.Component {
 
 //angaben gemäß der Des Telemedie Gesetzt
 function AngabenGemaess5TMG(props) {
-  const changeInput = (prop, value) => {
-    props.changeInput({ ...props.angabenGemaess5TMG, [prop]: value });
-  };
   return (
     <div style={{ marginBottom: "20px" }}>
       <Typography variant="h5">Angaben gemäß § 5 TMG</Typography>
@@ -352,7 +337,7 @@ function InputFeld(props) {
         margin="dense"
         variant="outlined"
         value={" " + props.value[props.propname]}
-        onChange={event =>
+        onChange={(event) =>
           props.changeInput({
             ...props.value,
             [props.propname]: event.target.value.substring(1)
@@ -363,4 +348,65 @@ function InputFeld(props) {
   );
 }
 
+function DatenschutzErklaerung(props) {
+  const [file, setFile] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const loadFile = () => {
+    const callback = (response) => {
+      if (response.data.success) {
+        setFile(response.data.file);
+      } else {
+        props.returnError(response.data.errortext);
+      }
+    };
+    postRequest(
+      "https://www.buergerverein-rheindoerfer.de/phpTest/Files/getFileInfo.php",
+      props.user,
+      { fileID: props.DatenschutzErklaerung },
+      callback
+    );
+  };
+
+  if (file === null) {
+    loadFile();
+    return (
+      <div style={{ textAlign: "center", padding: 20 }}>
+        <CircularProgress />
+      </div>
+    );
+  } else {
+    return (
+      <React.Fragment>
+        <Typography display="inline">
+          Die DatenschutzErklärung ist die Datei:
+        </Typography>
+        <Button
+          variant="outlined"
+          style={{ marginLeft: "5px" }}
+          onClick={() => setOpen(true)}
+        >
+          {file.fileName}
+        </Button>
+        <Dialog
+          open={open}
+          onClose={() => {
+            setOpen(false);
+          }}
+          fullWidth
+          maxWidth="md"
+        >
+          <FileBrowser
+            user={props.user}
+            returnFileData={(file1) => {
+              setFile(file1);
+              setOpen(false);
+              props.changeInput({ DatenschutzErklaerung: file1.fileID + "" });
+            }}
+          />
+        </Dialog>
+      </React.Fragment>
+    );
+  }
+}
 export default withStyles(styles)(ChangeImpressumg);

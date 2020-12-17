@@ -13,7 +13,7 @@ import {} from "@material-ui/icons";
 
 import ChangeImpressumg from "./ChangeImpressumg.js";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     textAlign: "left",
     //border: "solid 2px red",
@@ -36,34 +36,12 @@ class Impressum extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      impressum: null,
-      impressum1: {
-        angabenGemaess5TMG: {
-          organisation: "Bürgerverein Rheinkassel e.V.",
-          strasse: "Amandus Straße",
-          spezifizierung: "",
-          plzStadt: "50769 Köln",
-          vereinRegisterNummer: "vereinRegisterNummer",
-          registerGericht: "registerGericht",
-          anwaltlicheVertretung: "Anwalt Anwalt"
-        },
-        contact: {
-          telefonNummer: "0221 1234567",
-          email: "beispielMail@email.com"
-        },
-        verantwortlichFuerDenInhaltNach55Abs2RStV: {
-          name: "Beispiel Redakteur",
-          strasseHausnummer: "BeispielStraße 2",
-          spezifizierung: "",
-          plzStadt: "50769 Köln"
-        }
-      }
+      impressum: null
     };
   }
 
   loadImpressum = () => {
-    const callback = response => {
-      console.log(response.data);
+    const callback = (response) => {
       if (response.data.success) {
         this.setState({
           impressum: response.data.impressum
@@ -221,7 +199,7 @@ function VerantwortlichFuerDenInhaltNach55Abs2RStV(props) {
   );
 }
 //Scheint nicht für uns relevant zu sein
-function SchlichtungsStelle(props) {
+/**function SchlichtungsStelle(props) {
   return (
     <div>
       <Typography variant="h5">
@@ -235,6 +213,6 @@ function SchlichtungsStelle(props) {
       </div>
     </div>
   );
-}
+}**/
 
 export default withStyles(styles)(Impressum);
