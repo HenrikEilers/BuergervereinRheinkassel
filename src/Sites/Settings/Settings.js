@@ -25,8 +25,9 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 
 import axios from "axios";
+import { passwordPolicy } from "../../constants.js";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     width: "306px",
     margin: "auto",
@@ -95,7 +96,7 @@ class Settings extends React.Component {
 
   //methoden für änderung des Usernames
 
-  tryChange = prop => {
+  tryChange = (prop) => {
     //axios anfrage an php
     this.setState({
       [prop]: {
@@ -137,6 +138,17 @@ class Settings extends React.Component {
         });
         return;
       }
+      const passwordPolicyResult = passwordPolicy(this.state.password.newdata);
+      if (passwordPolicyResult.conforms === false) {
+        this.setState({
+          [prop]: {
+            ...this.state[prop],
+            Error: true,
+            Errortext: passwordPolicyResult.message
+          }
+        });
+        return;
+      }
     }
 
     if (prop === "email") {
@@ -172,7 +184,7 @@ class Settings extends React.Component {
           }
         }
       )
-      .then(response => {
+      .then((response) => {
         if (response.data.success === true) {
           this.props.changeUserState(prop, this.state[prop].newdata);
           this.setState({
@@ -192,7 +204,7 @@ class Settings extends React.Component {
         }
         //this.setState({ data1: response.data });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   //Panel zum Änderen des Usernames
@@ -521,7 +533,7 @@ class Settings extends React.Component {
   };
 
   //methode zum ändern der Textfeld Values
-  handleTextFieldChange = (prop1, prop2) => event => {
+  handleTextFieldChange = (prop1, prop2) => (event) => {
     this.setState({
       [prop1]: {
         ...this.state[prop1],
