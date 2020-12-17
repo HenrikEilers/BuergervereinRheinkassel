@@ -22,7 +22,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <MuiThemeProvider theme={theme}>
-          <Router>
+          <Router basename="/Test">
             <Appdrawer />
           </Router>
         </MuiThemeProvider>
