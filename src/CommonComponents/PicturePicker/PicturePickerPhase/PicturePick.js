@@ -3,23 +3,18 @@ import { withStyles } from "@material-ui/core/styles";
 import { withTheme } from "@material-ui/core/styles";
 
 import {
-  Dialog,
   Typography,
   Grid,
   Button,
   FormControl,
   MenuItem,
-  FormHelperText,
   InputLabel,
   Select,
-  Divider,
-  Collapse,
   ButtonBase,
   CircularProgress,
   InputAdornment,
   Card,
   IconButton,
-  LinearProgress,
   TextField,
   Paper
 } from "@material-ui/core";
@@ -29,6 +24,7 @@ import Down from "@material-ui/icons/ArrowDownward";
 import Search from "@material-ui/icons/Search";
 
 import PublishIcon from "@material-ui/icons/Publish";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import { withRouter } from "react-router-dom";
 
@@ -36,18 +32,9 @@ import PictureTile from "./../Components/PictureTile.js";
 import { getRequestwithAu } from "../../../actions.js";
 
 import React from "react";
-import {
-  PICTURE_PICK,
-  GROUP_SELECT,
-  GROUP_DATE_SELECT,
-  GROUP_EDIT,
-  NEW_GROUP,
-  CHANGE_GROUP,
-  DELETE_GROUP,
-  UPLOAD_PICTURE
-} from "../constants.js";
+import { GROUP_SELECT, UPLOAD_PICTURE, DELETE_PICTURE } from "../constants.js";
 
-const styles = theme => ({
+const styles = (theme) => ({
   card: {
     maxHeight: 300,
     width: "100%",
@@ -90,8 +77,7 @@ class PicturePick extends React.Component {
       "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getPictures.php",
       this.props.user,
 
-      response => {
-        console.log(response);
+      (response) => {
         if (response.data.success) {
           this.setState({
             pictures: response.data.pictures
@@ -112,7 +98,6 @@ class PicturePick extends React.Component {
   };
 
   sortPictures = (prop, Desk = false) => {
-    console.log(prop);
     const picturestmp = this.state.pictures.sort(
       (firstPicture, secondPicture) => {
         var returnTmp = 0;
@@ -128,11 +113,10 @@ class PicturePick extends React.Component {
         return returnTmp;
       }
     );
-    console.log(picturestmp);
     this.setState({ pictures: picturestmp });
   };
 
-  shouldBeDisplayed = picture => {
+  shouldBeDisplayed = (picture) => {
     //Abgleichung mit Suchleiste
     if (
       picture.name.toUpperCase().search(this.state.imgSearch.toUpperCase()) !==
@@ -145,7 +129,7 @@ class PicturePick extends React.Component {
       // Ist Mitglied der Ausgewählten Gruppe
       if (
         -1 !==
-        this.props.choosenGroup.gruppenmitglieder.findIndex(value1 => {
+        this.props.choosenGroup.gruppenmitglieder.findIndex((value1) => {
           return picture.pictureID === value1;
         })
       ) {
@@ -171,6 +155,7 @@ class PicturePick extends React.Component {
                       style={{ marginBottom: 10, paddingRight: 5 }}
                     >
                       <PictureTile
+                        markedColor="green"
                         picture={picture}
                         onClick={this.props.returnPicture}
                       />
@@ -193,6 +178,7 @@ class PicturePick extends React.Component {
                       style={{ marginBottom: 10, paddingLeft: 5 }}
                     >
                       <PictureTile
+                        markedColor="green"
                         picture={picture}
                         onClick={this.props.returnPicture}
                       />
@@ -211,6 +197,7 @@ class PicturePick extends React.Component {
                 return (
                   <Grid key={index} item sm={12} style={{ marginBottom: 10 }}>
                     <PictureTile
+                      markedColor="green"
                       picture={picture}
                       onClick={this.props.returnPicture}
                     />
@@ -236,7 +223,7 @@ class PicturePick extends React.Component {
             (this.state.choosenPictureGroup === null ||
               -1 !==
                 this.state.choosenPictureGroup.gruppenmitglieder.findIndex(
-                  value1 => {
+                  (value1) => {
                     return value.pictureID === value1;
                   }
                 ))
@@ -290,17 +277,49 @@ class PicturePick extends React.Component {
       this.props.disableUpload === false
     ) {
       return (
-        <Button
-          onClick={() => this.props.changePhase(UPLOAD_PICTURE)}
-          variant="outlined"
-          fullWidth
-          style={{ padding: 10, marginBottom: 10 }}
-        >
-          <div style={{ width: "100%" }}>Bild Hochladen</div>
-          <PublishIcon />
-        </Button>
+        <Grid xs={12} md={this.props.disableDelete === true ? 12 : 6} item>
+          <Button
+            onClick={() => this.props.changePhase(UPLOAD_PICTURE)}
+            variant="outlined"
+            fullWidth
+            style={{ padding: 10 }}
+          >
+            <div style={{ width: "100%" }}>Bild Hochladen</div>
+            <PublishIcon />
+          </Button>
+        </Grid>
       );
     }
+  };
+
+  renderDeleteButton = () => {
+    if (
+      this.props.disableDelete === undefined ||
+      this.props.disableDelete === false
+    ) {
+      return (
+        <Grid xs={12} md={this.props.disableUpload === true ? 12 : 6} item>
+          <Button
+            onClick={() => this.props.changePhase(DELETE_PICTURE)}
+            variant="outlined"
+            fullWidth
+            style={{ padding: 10 }}
+          >
+            <div style={{ width: "100%" }}>Bild Löschen</div>
+            <DeleteIcon />
+          </Button>
+        </Grid>
+      );
+    }
+  };
+
+  renderDeleteAndUpload = () => {
+    return (
+      <Grid container spacing={1} style={{ marginBottom: 5 }}>
+        {this.renderUploadButton()}
+        {this.renderDeleteButton()}
+      </Grid>
+    );
   };
 
   render() {
@@ -324,7 +343,7 @@ class PicturePick extends React.Component {
 
     return (
       <div style={{ padding: 10 }}>
-        {this.renderUploadButton()}
+        {this.renderDeleteAndUpload()}
         <Grid spacing={1} container style={{ marginBottom: 10 }}>
           <Grid xs={12} sm={6} item>
             <Button
@@ -346,7 +365,7 @@ class PicturePick extends React.Component {
               <Select
                 style={{ width: "100%" }}
                 defaultValue="pictureID"
-                onChange={event => {
+                onChange={(event) => {
                   this.sortPictures(event.target.value, this.state.desc);
                 }}
                 inputProps={{
@@ -376,7 +395,7 @@ class PicturePick extends React.Component {
                 size="small"
                 variant="outlined"
                 value={this.state.imgSearch}
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({ imgSearch: event.target.value });
                 }}
                 InputProps={{

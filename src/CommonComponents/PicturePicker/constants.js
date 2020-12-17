@@ -8,6 +8,7 @@ const CHANGE_GROUP = 5; //Phase in der Gruppen verändert werden
 const UPLOAD_PICTURE = 6; // Uplaod Phase
 const DELETE_GROUP = 7; //Phase in der Gruppe Gelöscht wird
 const UPLOAD_GROUP_SELECT = 8; //Phase in der die gruppen zugehörigkeit des hochgeleden Bildes festgelegt wird
+const DELETE_PICTURE = 9; //Phase in der Bilder gelöscht werden können
 
 export {
   PICTURE_PICK,
@@ -18,5 +19,6 @@ export {
   CHANGE_GROUP,
   UPLOAD_PICTURE,
   DELETE_GROUP,
-  UPLOAD_GROUP_SELECT
+  UPLOAD_GROUP_SELECT,
+  DELETE_PICTURE
 };

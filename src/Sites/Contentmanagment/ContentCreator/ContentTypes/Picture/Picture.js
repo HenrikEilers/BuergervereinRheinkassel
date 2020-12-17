@@ -4,11 +4,7 @@ import { Typography, ButtonBase, Paper } from "@material-ui/core";
 
 import ImageSearchIcon from "@material-ui/icons/ImageSearch";
 
-import { withRouter, Link } from "react-router-dom";
-
 import PictureDialog from "./PictureDialog.js";
-
-import { postRequest } from "../../../../../actions.js";
 
 import React from "react";
 
@@ -23,7 +19,6 @@ const styles = (theme) => ({
 class Picture extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props.picture);
     this.state = {
       pictureDialogOpen: false,
       picture: props.picture

@@ -5,31 +5,20 @@ import { withTheme } from "@material-ui/core/styles";
 import {
   Dialog,
   Typography,
-  Grid,
   Button,
   TextField,
   Divider,
   Collapse,
-  ButtonBase,
-  CircularProgress,
-  InputAdornment,
-  Card,
-  LinearProgress
+  ButtonBase
 } from "@material-ui/core";
 
 import PicturePicker from "../../../../../CommonComponents/PicturePicker/PicturePicker";
 
-import Search from "@material-ui/icons/Search";
-
-import PublishIcon from "@material-ui/icons/Publish";
-
 import { withRouter } from "react-router-dom";
-
-import { postRequest, postUploadPicture } from "../../../../../actions.js";
 
 import React from "react";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     backgroundColor: theme.palette.background.paper
   },
@@ -113,7 +102,6 @@ class PictureDialog extends React.Component {
 
   renderDialogContent = () => {
     if (EMPTY_PICTURE_START === this.state.stateOfDialog) {
-      console.log(this.props.stateOfDialog);
       return this.renderEmptyPictureStart();
     }
     if (OWNPICTURE_START === this.state.stateOfDialog) {
@@ -154,7 +142,7 @@ class PictureDialog extends React.Component {
             <Typography variant="caption">Bildlink einfügen</Typography>
             <TextField
               value={this.state.picture.content}
-              onChange={event => {
+              onChange={(event) => {
                 this.setState({
                   picture: {
                     ...this.state.picture,
@@ -276,7 +264,7 @@ class PictureDialog extends React.Component {
   renderChoosePicture = () => {
     return (
       <PicturePicker
-        getPicture={picture =>
+        getPicture={(picture) =>
           this.setState({
             picture: {
               ...this.state.picture,
@@ -342,7 +330,6 @@ class PictureDialog extends React.Component {
 
   //render methode
   render() {
-    const { classes } = this.props;
     return (
       <div>
         <Dialog

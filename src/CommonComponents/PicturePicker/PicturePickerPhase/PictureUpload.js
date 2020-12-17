@@ -3,7 +3,6 @@ import { withStyles } from "@material-ui/core/styles";
 import { withTheme } from "@material-ui/core/styles";
 
 import {
-  Dialog,
   Typography,
   Grid,
   Button,
@@ -11,14 +10,10 @@ import {
   Divider,
   Collapse,
   ButtonBase,
-  CircularProgress,
-  InputAdornment,
   Card,
   LinearProgress,
   Paper
 } from "@material-ui/core";
-
-import Search from "@material-ui/icons/Search";
 
 import PublishIcon from "@material-ui/icons/Publish";
 
@@ -30,26 +25,12 @@ import {
   KeyboardDatePicker
 } from "@material-ui/pickers";
 
-import {
-  postRequest,
-  getRequest,
-  postUploadPicture
-} from "../../../actions.js";
+import { postUploadPicture } from "../../../actions.js";
 
 import React from "react";
-import {
-  PICTURE_PICK,
-  GROUP_SELECT,
-  GROUP_DATE_SELECT,
-  GROUP_EDIT,
-  NEW_GROUP,
-  CHANGE_GROUP,
-  DELETE_GROUP,
-  UPLOAD_PICTURE,
-  UPLOAD_GROUP_SELECT
-} from "../constants.js";
+import { PICTURE_PICK, UPLOAD_GROUP_SELECT } from "../constants.js";
 
-const styles = theme => ({
+const styles = (theme) => ({
   hiddenInput: {
     width: "0.1px",
     height: "0.1px",
@@ -67,7 +48,6 @@ const styles = theme => ({
 class PictureUpload extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props.uploadGroups.length);
     this.state = {
       uploadReady: false,
       progress: -1,
@@ -98,7 +78,7 @@ class PictureUpload extends React.Component {
             id="date-picker-inline"
             label="Datum"
             value={this.state.picture.pictureDate}
-            onChange={eventDate => {
+            onChange={(eventDate) => {
               this.setState({
                 picture: {
                   ...this.state.picture,
@@ -122,10 +102,10 @@ class PictureUpload extends React.Component {
     );
   };
 
-  onChange = event => {
+  onChange = (event) => {
     const reader = new FileReader();
-    reader.onload = (file => {
-      return e => {
+    reader.onload = ((file) => {
+      return (e) => {
         const img = new Image();
         img.onload = () => {
           const tmp = file.name.split(".", 2);
@@ -166,8 +146,7 @@ class PictureUpload extends React.Component {
       this.state.picture.uploadHeight,
       this.state.picture.pictureDate.toISOString().substring(0, 10),
       this.props.uploadGroups,
-      response => {
-        console.log(response);
+      (response) => {
         if (response.data.success) {
           this.setState({
             success: true
@@ -179,7 +158,7 @@ class PictureUpload extends React.Component {
           });
         }
       },
-      progress => {
+      (progress) => {
         this.setState({ progress: progress });
       }
     );
@@ -243,9 +222,8 @@ class PictureUpload extends React.Component {
                 fullWidth
                 label="Name des Bildes"
                 value={this.state.picture.uploadName}
-                onChange={event => {
+                onChange={(event) => {
                   const regex = /^[\w-]*$/;
-                  console.log(regex.test(event.target.value));
                   this.setState({
                     picture: {
                       ...this.state.picture,

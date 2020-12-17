@@ -2,25 +2,6 @@ import { withStyles } from "@material-ui/core/styles";
 
 import { withTheme } from "@material-ui/core/styles";
 
-import {
-  Dialog,
-  Typography,
-  Grid,
-  Button,
-  TextField,
-  Divider,
-  Collapse,
-  ButtonBase,
-  CircularProgress,
-  InputAdornment,
-  Card,
-  LinearProgress
-} from "@material-ui/core";
-
-import Search from "@material-ui/icons/Search";
-
-import PublishIcon from "@material-ui/icons/Publish";
-
 import { withRouter } from "react-router-dom";
 
 //import { postRequest, getRequest, postUploadPicture } from "../../actions.js";
@@ -34,6 +15,7 @@ import PictureGroupOnEdit from "./PicturePickerPhase/PictureGroupOnEdit.js";
 import PictureGroupDate from "./PicturePickerPhase/PictureGroupDate.js";
 import PictureGroupDelete from "./PicturePickerPhase/PictureGroupDelete.js";
 import PictureUploadGroupSelect from "./PicturePickerPhase/PictureUploadGroupSelect.js";
+import PictureDelete from "./PicturePickerPhase/PictureDelete.js";
 
 import React from "react";
 import {
@@ -45,10 +27,11 @@ import {
   CHANGE_GROUP,
   DELETE_GROUP,
   UPLOAD_PICTURE,
-  UPLOAD_GROUP_SELECT
+  UPLOAD_GROUP_SELECT,
+  DELETE_PICTURE
 } from "./constants.js";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 /**Der PicturePicker soll eine Common Component werden,
  * die Standartmäßig für das auswählen der bilder benutzt werden
@@ -79,7 +62,7 @@ class PicturePicker extends React.Component {
     };
   }
 
-  changePhase = newPhase => {
+  changePhase = (newPhase) => {
     this.setState({ stateOfComponent: newPhase });
   };
 
@@ -91,6 +74,7 @@ class PicturePicker extends React.Component {
             <PicturePick
               changePhase={this.changePhase}
               disableUpload={this.props.disableUpload}
+              disableDelete={this.props.disableDelete}
               user={this.props.user}
               returnPicture={this.props.getPicture}
               choosenGroup={this.state.choosenGroup}
@@ -103,7 +87,7 @@ class PicturePicker extends React.Component {
             <PictureGroupSelect
               user={this.props.user}
               choosenGroup={this.state.choosenGroup}
-              returnGroup={group => this.setState({ choosenGroup: group })}
+              returnGroup={(group) => this.setState({ choosenGroup: group })}
               changePhase={this.changePhase}
             />
           </React.Fragment>
@@ -114,7 +98,7 @@ class PicturePicker extends React.Component {
             <PictureGroupDate
               user={this.props.user}
               choosenGroup={this.state.choosenGroup}
-              returnGroup={group =>
+              returnGroup={(group) =>
                 this.setState({
                   choosenGroup: group
                 })
@@ -129,7 +113,7 @@ class PicturePicker extends React.Component {
           <React.Fragment>
             <PictureGroupOnEdit
               user={this.props.user}
-              returnGroup={group => this.setState({ choosenGroup: group })}
+              returnGroup={(group) => this.setState({ choosenGroup: group })}
               changePhase={this.changePhase}
             />
           </React.Fragment>
@@ -140,7 +124,7 @@ class PicturePicker extends React.Component {
             <PictureGroupCreation
               user={this.props.user}
               choosenGroup={this.state.choosenGroup}
-              returnGroup={group => this.setState({ chooseGroup: group })}
+              returnGroup={(group) => this.setState({ chooseGroup: group })}
               changePhase={this.changePhase}
             />
           </React.Fragment>
@@ -151,7 +135,7 @@ class PicturePicker extends React.Component {
             <PictureGroupChange
               user={this.props.user}
               choosenGroup={this.state.choosenGroup}
-              returnGroup={group => this.setState({ chooseGroup: group })}
+              returnGroup={(group) => this.setState({ chooseGroup: group })}
               changePhase={this.changePhase}
             />
           </React.Fragment>
@@ -162,7 +146,7 @@ class PicturePicker extends React.Component {
             <PictureGroupDelete
               user={this.props.user}
               choosenGroup={this.state.choosenGroup}
-              returnGroup={group => this.setState({ chooseGroup: group })}
+              returnGroup={(group) => this.setState({ chooseGroup: group })}
               changePhase={this.changePhase}
             />
           </React.Fragment>
@@ -186,7 +170,20 @@ class PicturePicker extends React.Component {
           <React.Fragment>
             <PictureUploadGroupSelect
               uploadGroups={this.state.uploadGroups}
-              setUploadGroups={uploadGroups => {
+              setUploadGroups={(uploadGroups) => {
+                this.setState({ uploadGroups });
+              }}
+              user={this.props.user}
+              changePhase={this.changePhase}
+            />
+          </React.Fragment>
+        );
+      case DELETE_PICTURE:
+        return (
+          <React.Fragment>
+            <PictureDelete
+              uploadGroups={this.state.uploadGroups}
+              setUploadGroups={(uploadGroups) => {
                 this.setState({ uploadGroups });
               }}
               user={this.props.user}

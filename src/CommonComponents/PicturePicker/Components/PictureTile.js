@@ -9,7 +9,7 @@ import {
   Typography
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   card: {
     maxHeight: 300,
     width: "100%",
@@ -54,7 +54,8 @@ class PictureTile extends React.Component {
         <Card
           className={this.props.classes.card}
           style={{
-            backgroundColor: this.props.choosen === true ? "green" : "white"
+            backgroundColor:
+              this.props.choosen === true ? this.props.markedColor : "white"
           }}
         >
           <Typography

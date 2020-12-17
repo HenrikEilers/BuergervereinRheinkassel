@@ -7,34 +7,21 @@ import {
   List,
   Divider,
   ButtonBase,
-  Grid,
   ListItem,
-  Button,
   TextField,
   CircularProgress,
   ListItemText,
   Paper
 } from "@material-ui/core";
 
-import AddIcon from "@material-ui/icons/Add";
-
 import { withRouter } from "react-router-dom";
 
 import { getRequestwithAu } from "../../../actions.js";
 
 import React from "react";
-import {
-  PICTURE_PICK,
-  GROUP_SELECT,
-  GROUP_DATE_SELECT,
-  GROUP_EDIT,
-  NEW_GROUP,
-  CHANGE_GROUP,
-  DELETE_GROUP,
-  UPLOAD_PICTURE
-} from "../constants.js";
+import { PICTURE_PICK, GROUP_SELECT } from "../constants.js";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 /**Beschreibung:
  * Es sollen Gruppen ausgewählt werden
@@ -56,8 +43,7 @@ class PictureGroupDate extends React.Component {
       "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/PictureGroup/getDateGroups.php",
       this.props.user,
 
-      response => {
-        console.log(response);
+      (response) => {
         if (response.data.success) {
           this.setState({
             groups: response.data.pictureGroups
@@ -113,7 +99,7 @@ class PictureGroupDate extends React.Component {
             fullWidth
             variant="outlined"
             label="Suche"
-            onChange={event =>
+            onChange={(event) =>
               this.setState({ groupSearch: event.target.value })
             }
           />

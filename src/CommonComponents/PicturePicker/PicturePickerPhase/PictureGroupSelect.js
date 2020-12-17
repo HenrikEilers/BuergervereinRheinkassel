@@ -21,18 +21,9 @@ import { withRouter } from "react-router-dom";
 import { getRequestwithAu } from "../../../actions.js";
 
 import React from "react";
-import {
-  PICTURE_PICK,
-  GROUP_SELECT,
-  GROUP_DATE_SELECT,
-  GROUP_EDIT,
-  NEW_GROUP,
-  CHANGE_GROUP,
-  DELETE_GROUP,
-  UPLOAD_PICTURE
-} from "../constants.js";
+import { PICTURE_PICK, GROUP_DATE_SELECT, GROUP_EDIT } from "../constants.js";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 /**Beschreibung:
  * Es sollen Gruppen ausgewählt werden
@@ -54,8 +45,7 @@ class PictureGroupSelect extends React.Component {
       "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/PictureGroup/getGroups.php",
       this.props.user,
 
-      response => {
-        console.log(response);
+      (response) => {
         if (response.data.success) {
           this.setState({
             groups: response.data.pictureGroups
@@ -116,7 +106,7 @@ class PictureGroupSelect extends React.Component {
             fullWidth
             variant="outlined"
             label="Suche"
-            onChange={event =>
+            onChange={(event) =>
               this.setState({ groupSearch: event.target.value })
             }
           />

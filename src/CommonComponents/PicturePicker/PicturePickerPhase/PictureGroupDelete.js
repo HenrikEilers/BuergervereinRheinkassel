@@ -2,40 +2,16 @@ import { withStyles } from "@material-ui/core/styles";
 
 import { withTheme } from "@material-ui/core/styles";
 
-import {
-  Typography,
-  List,
-  Divider,
-  ListItemIcon,
-  ListItem,
-  CircularProgress,
-  ListItemText,
-  Paper,
-  TextField,
-  ButtonBase,
-  Button,
-  Collapse
-} from "@material-ui/core";
-
-import AddIcon from "@material-ui/icons/Add";
+import { Typography, Paper, Button, Collapse } from "@material-ui/core";
 
 import { withRouter } from "react-router-dom";
 
 import { postRequest } from "../../../actions.js";
 
 import React from "react";
-import {
-  PICTURE_PICK,
-  GROUP_SELECT,
-  GROUP_DATE_SELECT,
-  GROUP_EDIT,
-  NEW_GROUP,
-  CHANGE_GROUP,
-  DELETE_GROUP,
-  UPLOAD_PICTURE
-} from "../constants.js";
+import { GROUP_EDIT, CHANGE_GROUP } from "../constants.js";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 /**Beschreibung:
  * Es soll eine Gruppe Gelöscht werden
@@ -50,7 +26,7 @@ class PictureGroupDelete extends React.Component {
   }
 
   deleteGroup = () => {
-    const callback = response => {
+    const callback = (response) => {
       if (response.data.success) {
         this.setState({ deleted: true });
       } else {

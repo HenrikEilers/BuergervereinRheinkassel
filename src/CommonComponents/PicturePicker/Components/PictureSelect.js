@@ -21,7 +21,7 @@ import {
   Button
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   card: {
     maxHeight: 300,
     width: "100%",
@@ -76,10 +76,10 @@ class PictureSelect extends React.Component {
     this.setState({ selectAll: !this.state.selectAll });
   };
 
-  pictureClick = picture => {
+  pictureClick = (picture) => {
     var groupMemberTmp = this.props.groupMember;
     if (groupMemberTmp.includes(picture.pictureID)) {
-      groupMemberTmp = groupMemberTmp.filter(value => {
+      groupMemberTmp = groupMemberTmp.filter((value) => {
         return value !== picture.pictureID;
       });
     } else {
@@ -130,7 +130,7 @@ class PictureSelect extends React.Component {
     });
   };
 
-  shouldBeDisplayed = picture => {
+  shouldBeDisplayed = (picture) => {
     if (
       picture.name.toUpperCase().search(this.state.imgSearch.toUpperCase()) !==
       -1
@@ -156,6 +156,7 @@ class PictureSelect extends React.Component {
                       style={{ marginBottom: 10, paddingRight: 5 }}
                     >
                       <PictureTile
+                        markedColor={this.props.markingColor}
                         choosen={this.props.groupMember.includes(
                           picture.pictureID
                         )}
@@ -181,6 +182,7 @@ class PictureSelect extends React.Component {
                       style={{ marginBottom: 10, paddingLeft: 5 }}
                     >
                       <PictureTile
+                        markedColor={this.props.markingColor}
                         choosen={this.props.groupMember.includes(
                           picture.pictureID
                         )}
@@ -202,6 +204,7 @@ class PictureSelect extends React.Component {
                 return (
                   <Grid key={index} item sm={12} style={{ marginBottom: 10 }}>
                     <PictureTile
+                      markedColor={this.props.markingColor}
                       choosen={this.props.groupMember.includes(
                         picture.pictureID
                       )}
@@ -234,7 +237,6 @@ class PictureSelect extends React.Component {
 
   //render methode
   render() {
-    const { pictures, groupmember } = this.props;
     return (
       <div style={{ padding: 10 }}>
         <Grid spacing={1} container style={{ marginBottom: 10 }}>
@@ -254,7 +256,7 @@ class PictureSelect extends React.Component {
               <Select
                 value={this.state.sortAfterProp}
                 style={{ width: "100%" }}
-                onChange={event => {
+                onChange={(event) => {
                   this.sortPictures(event.target.value, this.state.desc);
                 }}
                 inputProps={{
@@ -284,7 +286,7 @@ class PictureSelect extends React.Component {
                 size="small"
                 variant="outlined"
                 value={this.state.imgSearch}
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({ imgSearch: event.target.value });
                 }}
                 InputProps={{

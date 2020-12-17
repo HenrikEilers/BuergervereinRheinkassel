@@ -3,22 +3,15 @@ import { withStyles } from "@material-ui/core/styles";
 import { withTheme } from "@material-ui/core/styles";
 
 import {
-  Dialog,
   Typography,
-  Grid,
   Button,
   TextField,
   Divider,
   Collapse,
   ButtonBase,
   CircularProgress,
-  InputAdornment,
-  Card,
-  LinearProgress,
   Paper
 } from "@material-ui/core";
-
-import Search from "@material-ui/icons/Search";
 
 import PictureSelect from "./../Components/PictureSelect.js";
 
@@ -27,18 +20,9 @@ import { withRouter } from "react-router-dom";
 import { getRequestwithAu, postRequest } from "../../../actions.js";
 
 import React from "react";
-import {
-  PICTURE_PICK,
-  GROUP_SELECT,
-  GROUP_DATE_SELECT,
-  GROUP_EDIT,
-  NEW_GROUP,
-  CHANGE_GROUP,
-  DELETE_GROUP,
-  UPLOAD_PICTURE
-} from "../constants.js";
+import { GROUP_EDIT, DELETE_GROUP } from "../constants.js";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 /**Der PicturePicker soll eine Common Component werden,
  * die Standartmäßig für das auswählen der bilder benutzt werden
@@ -62,8 +46,7 @@ class PictureGroupChange extends React.Component {
       "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getPictures.php",
       this.props.user,
 
-      response => {
-        console.log(response);
+      (response) => {
         if (response.data.success) {
           this.setState({
             pictures: response.data.pictures
@@ -102,7 +85,7 @@ class PictureGroupChange extends React.Component {
     var groupTMP = this.props.choosenGroup;
     groupTMP.gruppenmitglieder = this.state.groupMember;
     groupTMP.name = this.state.groupName;
-    const callback = response => {
+    const callback = (response) => {
       if (response.data.success) {
         this.props.returnGroup(groupTMP);
       } else {
@@ -169,7 +152,7 @@ class PictureGroupChange extends React.Component {
             variant="outlined"
             fullWidth
             value={this.state.groupName}
-            onChange={event => {
+            onChange={(event) => {
               this.setState({ groupName: event.target.value });
             }}
           />
@@ -187,10 +170,10 @@ class PictureGroupChange extends React.Component {
           </Button>
         </div>
         <PictureSelect
+          markingColor="green"
           pictures={this.state.pictures}
           groupMember={this.state.groupMember}
-          pictureClick={this.changeGroup}
-          setGroupMember={groupMember => this.setState({ groupMember })}
+          setGroupMember={(groupMember) => this.setState({ groupMember })}
         />
       </React.Fragment>
     );

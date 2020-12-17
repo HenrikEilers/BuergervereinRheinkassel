@@ -16,25 +16,14 @@ import {
   ButtonBase
 } from "@material-ui/core";
 
-import AddIcon from "@material-ui/icons/Add";
-
 import { withRouter } from "react-router-dom";
 
 import { getRequestwithAu } from "../../../actions.js";
 
 import React from "react";
-import {
-  PICTURE_PICK,
-  GROUP_SELECT,
-  GROUP_DATE_SELECT,
-  GROUP_EDIT,
-  NEW_GROUP,
-  CHANGE_GROUP,
-  DELETE_GROUP,
-  UPLOAD_PICTURE
-} from "../constants.js";
+import { UPLOAD_PICTURE } from "../constants.js";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 /**Beschreibung:
  * Es sollen Gruppen ausgewählt werden
@@ -51,10 +40,10 @@ class PictureUploadGroupSelect extends React.Component {
     };
   }
 
-  onCheck = group => {
+  onCheck = (group) => {
     var choosenGroupsTMP = this.state.choosenGroups;
     if (this.state.choosenGroups.includes(group.GroupID)) {
-      choosenGroupsTMP = choosenGroupsTMP.filter(value => {
+      choosenGroupsTMP = choosenGroupsTMP.filter((value) => {
         return value !== group.GroupID;
       });
     } else {
@@ -72,8 +61,7 @@ class PictureUploadGroupSelect extends React.Component {
       "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/PictureGroup/getGroups.php",
       this.props.user,
 
-      response => {
-        console.log(response);
+      (response) => {
         if (response.data.success) {
           this.setState({
             groups: response.data.pictureGroups
@@ -131,7 +119,7 @@ class PictureUploadGroupSelect extends React.Component {
             fullWidth
             variant="outlined"
             label="Suche"
-            onChange={event =>
+            onChange={(event) =>
               this.setState({ groupSearch: event.target.value })
             }
           />
@@ -145,7 +133,7 @@ class PictureUploadGroupSelect extends React.Component {
               this.setState({
                 choosenGroups: this.state.allGroups
                   ? []
-                  : this.state.groups.map(group => {
+                  : this.state.groups.map((group) => {
                       return group.GroupID;
                     }),
                 allGroups: !this.state.allGroups
