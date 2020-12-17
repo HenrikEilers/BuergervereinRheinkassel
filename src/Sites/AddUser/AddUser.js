@@ -75,9 +75,9 @@ class AddUser extends React.Component {
     };
   }
 
-  onFileChange = event => {
+  onFileChange = (event) => {
     const reader = new FileReader();
-    reader.onload = file => {
+    reader.onload = (file) => {
       var tableTMP = [];
       const tmp = reader.result.replace(/\r/g, "");
       const ResponseString = tmp.split("\n");
@@ -98,17 +98,16 @@ class AddUser extends React.Component {
     reader.readAsText(event.target.files[0], "ISO-8859-1");
   };
 
-  onClickSend = event => {
+  onClickSend = (event) => {
     const emailregex = new RegExp(
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
     if (!emailregex.test(this.state.newUser.email)) {
       this.setState({ emailError: true });
     } else {
       this.setState({ emailError: false });
 
-      const callback = response => {
-        console.log(response);
+      const callback = (response) => {
         if (response.data.success) {
           if (response.data.addResponse.success !== 1) {
             this.setState({
@@ -133,8 +132,7 @@ class AddUser extends React.Component {
   };
 
   onAddByFile = () => {
-    const callback = response => {
-      console.log(response);
+    const callback = (response) => {
       if (response.data.success) {
         const error = response.data.tableError || response.data.tableWarning;
 
@@ -173,7 +171,7 @@ class AddUser extends React.Component {
   };
 
   render() {
-    const { classes, user } = this.props;
+    const { classes } = this.props;
     return (
       <React.Fragment>
         <div className={classes.wrapper}>
@@ -190,7 +188,7 @@ class AddUser extends React.Component {
                 required
                 label="Username"
                 fullWidth
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({
                     newUser: {
                       ...this.state.newUser,
@@ -207,7 +205,7 @@ class AddUser extends React.Component {
                 error={this.state.emailError}
                 label="Email"
                 fullWidth
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({
                     newUser: {
                       ...this.state.newUser,
@@ -229,7 +227,7 @@ class AddUser extends React.Component {
                 <FormLabel style={{ color: "grey" }}>Rang</FormLabel>
                 <RadioGroup
                   value={this.state.newUser.rank}
-                  onChange={event => {
+                  onChange={(event) => {
                     this.setState({
                       newUser: {
                         ...this.state.newUser,
@@ -393,7 +391,7 @@ class AddUser extends React.Component {
                                   : "unset"
                             }}
                           >
-                            {this.state.table.names.map(name => (
+                            {this.state.table.names.map((name) => (
                               <TableCell
                                 style={{ color: "inherit" }}
                                 key={name + index}

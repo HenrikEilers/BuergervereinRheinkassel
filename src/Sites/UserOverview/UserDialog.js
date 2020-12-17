@@ -36,8 +36,8 @@ class UserDialog extends React.Component {
     };
   }
 
-  onChangeEmail = event => {
-    const callback = response => {
+  onChangeEmail = (event) => {
+    const callback = (response) => {
       this.setState({
         emailError: null,
         emailErrorText: ""
@@ -63,7 +63,7 @@ class UserDialog extends React.Component {
   };
 
   onChangeRank = () => {
-    const callback = response => {
+    const callback = (response) => {
       this.setState({
         rankError: null,
         rankErrorText: ""
@@ -88,13 +88,12 @@ class UserDialog extends React.Component {
     );
   };
 
-  onDeleteUser = event => {
+  onDeleteUser = (event) => {
     this.setState({
       deleteError: false,
       deleteErrorText: ""
     });
-    const callback = response => {
-      console.log(response);
+    const callback = (response) => {
       if (response.data.success) {
         this.props.onClose();
         this.props.removeUser();
@@ -115,9 +114,8 @@ class UserDialog extends React.Component {
 
   render() {
     const emailregex = new RegExp(
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      /^(([^<>()[]\\.,;:\s@"]+(\.[^<>()[]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
-    const { classes, user } = this.props;
 
     return (
       <React.Fragment>
@@ -166,7 +164,7 @@ class UserDialog extends React.Component {
               style={{}}
               placeholder="Neue Email"
               value={this.state.tmpEmail}
-              onChange={event =>
+              onChange={(event) =>
                 this.setState({ tmpEmail: event.target.value })
               }
             />
@@ -224,7 +222,7 @@ class UserDialog extends React.Component {
                       (this.state.tmpRank === -1 &&
                         this.props.userOnEdit.rank === 1)
                     }
-                    onChange={event => {
+                    onChange={(event) => {
                       this.setState({ tmpRank: Number(event.target.value) });
                     }}
                     color="primary"
@@ -242,8 +240,7 @@ class UserDialog extends React.Component {
                       (this.state.tmpRank === -1 &&
                         this.props.userOnEdit.rank === 2)
                     }
-                    onChange={event => {
-                      console.log(typeof this.state.tmpRank);
+                    onChange={(event) => {
                       this.setState({ tmpRank: Number(event.target.value) });
                     }}
                     color="primary"
@@ -261,7 +258,7 @@ class UserDialog extends React.Component {
                       (this.state.tmpRank === -1 &&
                         this.props.userOnEdit.rank === 3)
                     }
-                    onChange={event => {
+                    onChange={(event) => {
                       this.setState({ tmpRank: Number(event.target.value) });
                     }}
                     color="primary"

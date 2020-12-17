@@ -2,8 +2,6 @@ import {
   withStyles,
   Paper,
   Typography,
-  TextField,
-  Button,
   CircularProgress,
   Table,
   TableBody,
@@ -11,7 +9,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  ButtonBase,
   Snackbar
 } from "@material-ui/core";
 import Check from "@material-ui/icons/Check";
@@ -67,7 +64,7 @@ class UserOverview extends React.Component {
   }
 
   removeUser = () => {
-    const index = this.state.userList.findIndex(value => {
+    const index = this.state.userList.findIndex((value) => {
       return value.userID === this.state.chooseUser.userID;
     });
     const tmpUserlist = this.state.userList;
@@ -76,8 +73,7 @@ class UserOverview extends React.Component {
   };
 
   changeEmailOrRank = (prop, content) => {
-    console.log(this.state.userList);
-    const index = this.state.userList.findIndex(value => {
+    const index = this.state.userList.findIndex((value) => {
       return value.userID === this.state.chooseUser.userID;
     });
     var tmpUserlist = this.state.userList;
@@ -91,8 +87,7 @@ class UserOverview extends React.Component {
   render() {
     const { classes } = this.props;
     if (!this.state.onData) {
-      const callback = response => {
-        console.log(response);
+      const callback = (response) => {
         if (response.data.success) {
           this.setState({
             onData: true,
