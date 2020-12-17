@@ -4,20 +4,16 @@ import { withTheme } from "@material-ui/core/styles";
 
 import {
   InputBase,
-  TextField,
   Typography,
   ButtonBase,
   CircularProgress,
-  Dialog,
-  Divider,
   Collapse,
   Button,
-  Checkbox,
   Zoom,
-  Card,
   Paper,
   Grid,
-  ClickAwayListener
+  ClickAwayListener,
+  Dialog
 } from "@material-ui/core";
 
 import AddIcon from "@material-ui/icons/Add";
@@ -27,6 +23,7 @@ import SubjectIcon from "@material-ui/icons/Subject";
 import PhotoIcon from "@material-ui/icons/Photo";
 import LinkIcon from "@material-ui/icons/Link";
 import YouTubeIcon from "@material-ui/icons/YouTube";
+import GetAppIcon from "@material-ui/icons/GetApp";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
 
 import ImageSearchIcon from "@material-ui/icons/ImageSearch";
@@ -44,10 +41,11 @@ import Link from "./ContentTypes/Link/Link.js";
 import Picture from "./ContentTypes/Picture/Picture.js";
 import Text from "./ContentTypes/Text/Text.js";
 import Headline from "./ContentTypes/Headline/Headline.js";
+import Download from "./ContentTypes/Download/Download.js";
 
 import React from "react";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     //border: "solid 2px red",
     //paddingTop: "10px",
@@ -136,13 +134,18 @@ const LINKED_IMAGE_CONTENT = 3;
 const LINK_CONTENT = 4;
 const VIDEO_CONTENT = 5;
 const HEADLINE_CONTENT = 6;
+const DOWNLOAD_CONTENT = 7;
 
 class ContentCreator extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      error: false,
+      errortext: "",
       contentHead: this.props.contentHead,
+      lastUpdated: null,
       contentBody: [],
+      safeContentBody: [],
       pictureDialogOpen: false,
       pictureDialogIndex: -1,
       siteLoaded: this.props.contentHead.ContentID === -1 ? true : false,
@@ -169,47 +172,69 @@ class ContentCreator extends React.Component {
    * im vergleich zu dem Content der im Contentmanger hinterlegt ist.
    * Gib Wahrheits wert zurück
    */
-  hasToSave = () => {
-    if (this.state.contentHead.ContentID === -1) {
-      if (
-        this.state.contentHead.name === "" ||
-        this.state.contentHead.pictureID === "" ||
-        this.state.contentHead.ueberschrift === "" ||
-        this.state.contentHead.imgcontent === "none"
-      ) {
-        return false;
+
+  compareObject = (object1, object2) => {
+    for (const [prop, value] of Object.entries(object1)) {
+      if (typeof value === "object" && value !== null) {
+        if (this.compareObject(value, object2[prop]) === true) {
+          return true;
+        }
+      } else {
+        if (value !== object2[prop]) {
+          return true;
+        }
       }
     }
+    return false;
+  };
+
+  hasToSave = () => {
+    //Die verplichteten Felder sind nicht Ausgefüllt
+    if (
+      this.state.contentHead.name === "" ||
+      this.state.contentHead.pictureID === "" ||
+      this.state.contentHead.ueberschrift === "" ||
+      this.state.contentHead.imgcontent === "none"
+    ) {
+      return false;
+    }
+
+    //ContentHeadDialog is offen
     if (this.state.openContentHeadDialog) {
       return false;
     }
-    if (
-      !this.state.contentBody.every((value, index) => {
-        return value.content !== "";
-      })
-    ) {
-      return false;
-    }
+
+    //Die Content Gruppe hat sich verändert
     if (this.state.choosenContentGroups !== null) {
       return true;
     }
-    if (
-      JSON.stringify(this.state.contentBody) !==
-      JSON.stringify(this.state.safeContentBody)
-    ) {
+
+    //Länge des Contentbody hat sich verändern
+    if (this.state.contentBody.length !== this.state.safeContentBody.length) {
       return true;
     }
-    if (
-      JSON.stringify(this.state.contentHead) !==
-      JSON.stringify(this.props.contentHead)
-    ) {
+
+    //is Contentbody verändert worden
+    for (let index in this.state.contentBody) {
+      if (
+        this.compareObject(
+          this.state.contentBody[index],
+          this.state.safeContentBody[index]
+        )
+      ) {
+        return true;
+      }
+    }
+
+    //Ist der ContentHead verändert werden
+    if (this.compareObject(this.state.contentHead, this.props.contentHead)) {
       return true;
     }
     return false;
   };
 
   /**erstellt Kopie von Objekten */
-  bestCopyEver = src => {
+  bestCopyEver = (src) => {
     return JSON.parse(JSON.stringify(src));
   };
 
@@ -223,9 +248,9 @@ class ContentCreator extends React.Component {
   };
 
   /**fügt neues ContentBodyElement  ein */
-  addToBody = index => {
+  addToBody = (index) => {
     const emptyElement = {
-      ContentID: this.props.contentHead.contentID,
+      ContentID: this.props.contentHead.ContentID,
       ContentBodyID: -1,
       ContentTypeID: -1,
       content: "",
@@ -238,7 +263,13 @@ class ContentCreator extends React.Component {
       LinkID: 0,
       displayed: "",
       link: "",
-      paragraph: false
+      paragraph: false,
+      fileID: -1,
+      fileName: "",
+      filePath: "",
+      fileRank: "",
+      fileDisplayed: "",
+      fileParagraph: false
     };
     var tmpContentBody = this.state.contentBody;
     tmpContentBody.splice(index + 1, 0, emptyElement);
@@ -252,7 +283,7 @@ class ContentCreator extends React.Component {
   };
 
   /**löscht ContentBodyElement */
-  deleteFromBody = index => {
+  deleteFromBody = (index) => {
     var tmpContentBody = this.state.contentBody;
     tmpContentBody.splice(index, 1);
     tmpContentBody = tmpContentBody.map((value, index) => {
@@ -268,7 +299,7 @@ class ContentCreator extends React.Component {
    *  zu bestimmen welche art von content hinzugefügt
    *  werden sollte */
 
-  pickContent = index => {
+  pickContent = (index) => {
     return (
       <div style={{ margin: "10px 0px" }}>
         <Grid
@@ -384,6 +415,31 @@ class ContentCreator extends React.Component {
               <ButtonBase
                 onClick={() => {
                   const tmpContentBody = this.state.contentBody;
+                  tmpContentBody[index].ContentTypeID = DOWNLOAD_CONTENT;
+                  this.setState({ contentBody: tmpContentBody });
+                }}
+              >
+                <Paper
+                  square
+                  elevation={10}
+                  className={this.props.classes.menuPick}
+                >
+                  <GetAppIcon style={{ width: "50px", height: "100%" }} />
+                  <Typography
+                    className={this.props.classes.labelNewContent}
+                    variant="caption"
+                  >
+                    Download
+                  </Typography>
+                </Paper>
+              </ButtonBase>
+            </div>
+          </Grid>
+          <Grid item>
+            <div style={{ position: "relative" }}>
+              <ButtonBase
+                onClick={() => {
+                  const tmpContentBody = this.state.contentBody;
                   tmpContentBody[index].ContentTypeID = 5;
                   this.setState({ contentBody: tmpContentBody });
                 }}
@@ -406,6 +462,7 @@ class ContentCreator extends React.Component {
               </ButtonBase>
             </div>
           </Grid>
+
           <Grid item>
             <ButtonBase
               onClick={() => {
@@ -448,7 +505,9 @@ class ContentCreator extends React.Component {
           <Text
             onChangeElements={this.state.onChangeElements}
             text={value}
-            changeContentPiece={value => this.changeContentPiece(value, index)}
+            changeContentPiece={(value) =>
+              this.changeContentPiece(value, index)
+            }
           />
         );
       if (
@@ -460,7 +519,9 @@ class ContentCreator extends React.Component {
             user={this.props.user}
             onChangeElements={this.state.onChangeElements}
             picture={value}
-            changeContentPiece={value => this.changeContentPiece(value, index)}
+            changeContentPiece={(value) =>
+              this.changeContentPiece(value, index)
+            }
           />
         );
       //if (value.ContentTypeID === LINK_CONTENT) re = this.renderLink(index);
@@ -469,7 +530,9 @@ class ContentCreator extends React.Component {
           <Link
             onChangeElements={this.state.onChangeElements}
             link={value}
-            changeContentPiece={value => this.changeContentPiece(value, index)}
+            changeContentPiece={(value) =>
+              this.changeContentPiece(value, index)
+            }
           />
         );
       if (value.ContentTypeID === VIDEO_CONTENT) re = this.renderVideo(index);
@@ -478,7 +541,20 @@ class ContentCreator extends React.Component {
           <Headline
             onChangeElements={this.state.onChangeElements}
             headline={value}
-            changeContentPiece={value => this.changeContentPiece(value, index)}
+            changeContentPiece={(value) =>
+              this.changeContentPiece(value, index)
+            }
+          />
+        );
+      if (value.ContentTypeID === DOWNLOAD_CONTENT)
+        re = (
+          <Download
+            user={this.props.user}
+            onChangeElements={this.state.onChangeElements}
+            file={value}
+            changeContentPiece={(value) => {
+              this.changeContentPiece(value, index);
+            }}
           />
         );
 
@@ -566,7 +642,7 @@ class ContentCreator extends React.Component {
   };
 
   /**rendert ein Text ContentElement */
-  renderText = index => {
+  renderText = (index) => {
     return (
       <React.Fragment key={index}>
         <InputBase
@@ -579,7 +655,7 @@ class ContentCreator extends React.Component {
             input: this.props.classes.p
           }}
           value={this.state.contentBody[index].content}
-          onChange={event => {
+          onChange={(event) => {
             let tmp = this.state.contentBody;
             tmp[index].content = event.target.value;
             this.setState({ contentBody: tmp });
@@ -591,7 +667,7 @@ class ContentCreator extends React.Component {
 
   /**render ein Bild ContentElement und den PictureDialog
    *  um das Element verändern zu können */
-  renderBild = index => {
+  renderBild = (index) => {
     const renderCaption = () => {
       if (this.state.contentBody[index].content === "") {
         return null;
@@ -628,14 +704,6 @@ class ContentCreator extends React.Component {
         );
       }
       return null;
-    };
-
-    const stateOfDialog = () => {
-      if (this.state.contentBody[index].ContentTypeID === 2) {
-        return 1;
-      } else {
-        return 0;
-      }
     };
 
     return (
@@ -675,7 +743,7 @@ class ContentCreator extends React.Component {
         <div>{renderCaption()}</div>
         <PictureDialog
           pictureContent={this.state.contentBody[index]}
-          changeSave={value => this.changeContentPiece(value, index)}
+          changeSave={(value) => this.changeContentPiece(value, index)}
           open={
             this.state.pictureDialogOpen &&
             this.state.pictureDialogIndex === index
@@ -727,11 +795,11 @@ class ContentCreator extends React.Component {
   /**onSave  ist zum speichern der Daten dar.
    * sendet einen Axios post request an den server um die Datenbank zu verändern */
   onSave = () => {
-    const callback = response => {
-      console.log(response);
+    const callback = (response) => {
       if (response.data.success) {
         this.props.updateContentHeads(response.data.obj.load.contentHead);
         this.setState({
+          lastUpdated: null,
           contentBody: [],
           contentHead: response.data.obj.load.contentHead,
           pictureDialogOpen: false,
@@ -758,16 +826,24 @@ class ContentCreator extends React.Component {
           );
         }
       } else {
-        this.setState({
-          loadingError: true,
-          loadingErrorText: response.data.errortext
-        });
+        if (response.data.editConfict === undefined) {
+          this.setState({
+            loadingError: true,
+            loadingErrorText: response.data.errortext
+          });
+        } else {
+          this.setState({
+            error: true,
+            errortext: response.data.errortext
+          });
+        }
       }
     };
     postRequest(
       "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/setContent.php",
       this.props.user,
       {
+        lastUpdated: this.state.lastUpdated,
         contentHead: this.state.contentHead,
         contentBody: this.state.contentBody,
         choosenContentGroups: this.state.choosenContentGroups
@@ -788,7 +864,7 @@ class ContentCreator extends React.Component {
           }}
           placeholder="Überschrift"
           value={this.state.contentHead.ueberschrift}
-          onChange={event => {
+          onChange={(event) => {
             this.setState({
               contentHead: {
                 ...this.state.contentHead,
@@ -807,7 +883,7 @@ class ContentCreator extends React.Component {
           }}
           placeholder="Beschreibung"
           value={this.state.contentHead.beschreibungText}
-          onChange={event => {
+          onChange={(event) => {
             this.setState({
               contentHead: {
                 ...this.state.contentHead,
@@ -868,7 +944,7 @@ class ContentCreator extends React.Component {
           user={this.props.user}
           contentHead={this.state.contentHead}
           addToContentHead={this.addToContentHead}
-          setChoosenContentGroups={value => {
+          setChoosenContentGroups={(value) => {
             this.setState({ choosenContentGroups: value });
           }}
           choosenContentGroups={this.state.choosenContentGroups}
@@ -880,7 +956,7 @@ class ContentCreator extends React.Component {
   renderContentDisplayer = () => {
     return (
       <ContentDisplayer
-        user={this.state.user}
+        user={this.props.user}
         contentHead={this.state.contentHead}
         contentBody={this.state.contentBody}
       />
@@ -889,14 +965,7 @@ class ContentCreator extends React.Component {
 
   /**loads and redners the Component */
   render() {
-    const { classes, theme } = this.props;
-    if (this.state.loadingError) {
-      return (
-        <Typography style={{ textAlign: "center" }} color="error" variant="h3">
-          {this.state.loadingErrorText}
-        </Typography>
-      );
-    }
+    const { classes } = this.props;
 
     if (this.state.siteLoaded) {
       return (
@@ -981,10 +1050,39 @@ class ContentCreator extends React.Component {
                 </Grid>
                 {this.state.preview ? null : this.renderEditMode()}
                 {/**<Typography variant="h2">{this.state.contentHead.name}</Typography> */}
+                <Collapse in={this.state.loadingError}>
+                  <Paper
+                    style={{
+                      backgroundColor: "red",
+                      padding: 10,
+                      marginTop: 10
+                    }}
+                  >
+                    <Typography style={{ color: "white" }}>
+                      {this.state.loadingErrorText}
+                    </Typography>
+                  </Paper>
+                </Collapse>
               </div>
             </ClickAwayListener>
           </div>
           {this.state.preview ? this.renderContentDisplayer() : null}
+          <Dialog
+            open={this.state.error}
+            onClose={() => this.setState({ error: false })}
+          >
+            <Paper
+              style={{
+                padding: 10,
+                backgroundColor: "red",
+                textAlign: "center"
+              }}
+            >
+              <Typography style={{ color: "white" }}>
+                {this.state.errortext}
+              </Typography>
+            </Paper>
+          </Dialog>
         </React.Fragment>
       );
     } else {
@@ -992,10 +1090,11 @@ class ContentCreator extends React.Component {
         "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getContentBody.php",
         this.props.user,
         { ContentID: this.state.contentHead.ContentID },
-        response => {
+        (response) => {
           if (response.data.success) {
             this.setState({
               siteLoaded: true,
+              lastUpdated: response.data.lastUpdated,
               contentBody: response.data.contentBody,
               safeContentBody: this.bestCopyEver(response.data.contentBody)
             });

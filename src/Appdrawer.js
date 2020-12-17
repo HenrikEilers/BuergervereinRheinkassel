@@ -5,7 +5,6 @@ import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import IconButton from "@material-ui/core/IconButton";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import CircularProgress from "@material-ui/core/CircularProgress";
 
 import Snackbar from "@material-ui/core/Snackbar";
 
@@ -33,15 +32,23 @@ import UserOverview from "./Sites/UserOverview/UserOverview";
 import Impressum from "./Sites/Impressum/Impressum";
 import Poll from "./Sites/Poll/Poll";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     flexGrow: 1,
     "-webkit-flex-grow": "1",
     [theme.breakpoints.up("xs")]: {
-      marginTop: "70px"
+      //marginTop: "70px"
     },
     [theme.breakpoints.up("sm")]: {
-      marginTop: "75px"
+      //marginTop: "75px"
+    }
+  },
+  content: {
+    [theme.breakpoints.up("xs")]: {
+      paddingTop: "70px"
+    },
+    [theme.breakpoints.up("sm")]: {
+      paddingTop: "75px"
     }
   },
   grow: {
@@ -60,6 +67,16 @@ const styles = theme => ({
     color: "white",
     background: "inherit",
     border: "solid 1px white"
+  },
+  wrapper: {
+    minHeight: "100%",
+
+    /* Equal to height of footer */
+    /* But also accounting for potential margin-bottom of last child */
+    marginBottom: -50
+  },
+  spacer: {
+    height: "50px"
   }
 });
 
@@ -71,6 +88,7 @@ class Appdrawer extends React.Component {
       islogedIn: false,
       changePW: false,
       feedContentHead: null,
+      directAccessToLogin: props.location.pathname === "/login",
       user: {
         email: "",
         password: "",
@@ -129,7 +147,7 @@ class Appdrawer extends React.Component {
     });
   };
 
-  toggleDrawer = open => () => {
+  toggleDrawer = (open) => () => {
     this.setState({
       left: open
     });
@@ -143,173 +161,192 @@ class Appdrawer extends React.Component {
         "https://buergerverein-rheilaka.de/phpTest/getFeed.php",
         this.state.user,
         null,
-        response => {
+        (response) => {
           this.setState({ feedContentHead: response.data.feed });
         }
       );
     }
 
     return (
-      <div>
-        <div className={classes.root}>
-          <AppBar position="fixed" color="inherit" className={classes.appbar}>
-            <Toolbar>
-              <IconButton
-                onClick={this.toggleDrawer(true)}
-                className={classes.menuButton}
-                color="inherit"
-                aria-label="Menu"
-              >
-                <MenuIcon style={{ color: "white" }} />
-              </IconButton>
-              <Typography
-                onClick={() => {
-                  this.props.history.push("/");
-                }}
-                variant="h6"
-                color="inherit"
-                className={classes.grow}
-              >
-                {this.SiteName()}
-              </Typography>
-              {!this.state.islogedIn ? (
-                <Button
-                  variant="outlined"
-                  style={{ color: "white" }}
-                  color="inherit"
-                  component={Link}
-                  to="/login"
-                >
-                  Login
-                </Button>
-              ) : (
+      <React.Fragment>
+        <div className={classes.wrapper}>
+          <div className={classes.root}>
+            <AppBar position="fixed" color="inherit" className={classes.appbar}>
+              <Toolbar>
                 <IconButton
-                  variant="outlined"
+                  onClick={this.toggleDrawer(true)}
+                  className={classes.menuButton}
                   color="inherit"
-                  component={Link}
-                  to="/settings"
+                  aria-label="Menu"
                 >
-                  <AccountCircle style={{ color: "white" }} />
+                  <MenuIcon style={{ color: "white" }} />
                 </IconButton>
-              )}
-            </Toolbar>
-          </AppBar>
-          <SwipeableDrawer
-            open={this.state.left}
-            onOpen={this.toggleDrawer(true)}
-            onClose={this.toggleDrawer(false)}
-          >
-            <div
-              tabIndex={0}
-              role="button"
-              onClick={this.toggleDrawer(false)}
-              onKeyDown={this.toggleDrawer(false)}
+                <Typography
+                  onClick={() => {
+                    this.props.history.push("/");
+                  }}
+                  variant="h6"
+                  color="inherit"
+                  className={classes.grow}
+                >
+                  {this.SiteName()}
+                </Typography>
+                {!this.state.islogedIn ? (
+                  <Button
+                    variant="outlined"
+                    style={{ color: "white" }}
+                    color="inherit"
+                    component={Link}
+                    to="/login"
+                  >
+                    Login
+                  </Button>
+                ) : (
+                  <IconButton
+                    variant="outlined"
+                    color="inherit"
+                    component={Link}
+                    to="/settings"
+                  >
+                    <AccountCircle style={{ color: "white" }} />
+                  </IconButton>
+                )}
+              </Toolbar>
+            </AppBar>
+            <SwipeableDrawer
+              open={this.state.left}
+              onOpen={this.toggleDrawer(true)}
+              onClose={this.toggleDrawer(false)}
             >
-              <SideList
-                user={this.state.user}
-                reloadFeed={() => {
-                  this.setState({ feedContentHead: null });
-                }}
-              />
-            </div>
-          </SwipeableDrawer>
-        </div>
-
-        {/*Routing Area*/}
-        <Route
-          exact
-          path="/login"
-          render={() => {
-            return (
-              <Login
-                setCredentials={this.setCredentials}
-                changePW={() => this.setState({ changePW: true })}
-              />
-            );
-          }}
-        />
-
-        <Route
-          exact
-          path="/"
-          render={() => (
-            <Feed
-              offlineData={false}
-              user={this.state.user}
-              feedAction={tmpContentHead => {
-                this.props.history.push("/content/" + tmpContentHead.name);
+              <div
+                tabIndex={0}
+                role="button"
+                onClick={this.toggleDrawer(false)}
+                onKeyDown={this.toggleDrawer(false)}
+              >
+                <SideList
+                  user={this.state.user}
+                  reloadFeed={() => {
+                    this.setState({ feedContentHead: null });
+                  }}
+                />
+              </div>
+            </SwipeableDrawer>
+          </div>
+          <div className={classes.content}>
+            {/*Routing Area*/}
+            <Route
+              exact
+              path="/login"
+              render={() => {
+                return (
+                  <Login
+                    setCredentials={this.setCredentials}
+                    changePW={() =>
+                      this.setState({
+                        changePW: true,
+                        directAccessToLogin: false
+                      })
+                    }
+                    directAccess={this.state.directAccessToLogin}
+                    cancleDirectAccess={() =>
+                      this.setState({ directAccessToLogin: false })
+                    }
+                  />
+                );
               }}
             />
-          )}
-        />
-        <Route
-          exact
-          path="/impressum"
-          render={() => <Impressum user={this.state.user} />}
-        />
-        <Route
-          exact
-          path="/settings"
-          render={() => (
-            <Settings
-              user={this.state.user}
-              islogedIn={this.state.islogedIn}
-              changeUserState={(prop, value) => {
-                this.setState({ user: { ...this.state.user, [prop]: value } });
-              }}
-              handleAbmelden={this.handleAbmelden}
+
+            <Route
+              exact
+              path="/"
+              render={() => (
+                <Feed
+                  offlineData={false}
+                  user={this.state.user}
+                  feedAction={(tmpContentHead) => {
+                    this.props.history.push("/content/" + tmpContentHead.name);
+                  }}
+                />
+              )}
             />
-          )}
-        />
-        <Route
-          path="/contentmanager/"
-          render={() => <Contentmanager user={this.state.user} />}
-        />
-        <Route
-          path="/abstimmungen/"
-          render={() => <Poll user={this.state.user} />}
-        />
-        <Route
-          path="/content/"
-          render={() => {
-            return <Topic user={this.state.user} />;
-          }}
-        />
-        <Route
-          exact
-          path="/registrierung"
-          render={() => {
-            return <AddUser user={this.state.user} />;
-          }}
-        />
-        <Route
-          exact
-          path="/user_verwaltung"
-          render={() => {
-            return <UserOverview user={this.state.user} />;
-          }}
-        />
-        <Snackbar
-          open={this.state.changePW}
-          onClose={() => {
-            this.setState({ changePW: false });
-          }}
-          message={<span id="message-id">Bitte ändern sie Ihr Passwort</span>}
-          action={
-            <IconButton
-              key="close"
-              aria-label="close"
-              color="inherit"
-              onClick={() => {
+            <Route
+              exact
+              path="/impressum"
+              render={() => <Impressum user={this.state.user} />}
+            />
+            <Route
+              exact
+              path="/settings"
+              render={() => (
+                <Settings
+                  user={this.state.user}
+                  islogedIn={this.state.islogedIn}
+                  changeUserState={(prop, value) => {
+                    this.setState({
+                      user: { ...this.state.user, [prop]: value }
+                    });
+                  }}
+                  handleAbmelden={this.handleAbmelden}
+                />
+              )}
+            />
+            <Route
+              path="/contentmanager/"
+              render={() => <Contentmanager user={this.state.user} />}
+            />
+            <Route
+              path="/bugreport/"
+              render={() => <Poll user={this.state.user} />}
+            />
+            <Route
+              path="/content/"
+              render={() => {
+                return <Topic user={this.state.user} />;
+              }}
+            />
+            <Route
+              exact
+              path="/registrierung"
+              render={() => {
+                return <AddUser user={this.state.user} />;
+              }}
+            />
+            <Route
+              exact
+              path="/user_verwaltung"
+              render={() => {
+                return <UserOverview user={this.state.user} />;
+              }}
+            />
+            <Snackbar
+              open={this.state.changePW}
+              onClose={() => {
                 this.setState({ changePW: false });
               }}
-            >
-              <CloseIcon />
-            </IconButton>
-          }
-        />
-        <TopicSite />
-      </div>
+              message={
+                <span id="message-id">Bitte ändern sie Ihr Passwort</span>
+              }
+              action={
+                <IconButton
+                  key="close"
+                  aria-label="close"
+                  color="inherit"
+                  onClick={() => {
+                    this.setState({ changePW: false });
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
+            <div className={classes.spacer}></div>
+          </div>
+        </div>
+        <div style={{ border: "solid 0px red" }} className={classes.spacer}>
+          <TopicSite user={this.state.user} />
+        </div>
+      </React.Fragment>
     );
   }
 }

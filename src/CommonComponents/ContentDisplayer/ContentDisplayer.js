@@ -5,14 +5,15 @@ import { withTheme } from "@material-ui/core/styles";
 import { Typography, CircularProgress, Paper, Link } from "@material-ui/core";
 
 import ImageSearchIcon from "@material-ui/icons/ImageSearch";
+import GetAppIcon from "@material-ui/icons/GetApp";
 
 import { withRouter } from "react-router-dom";
 
-import { postRequest } from "../../actions.js";
+import { postRequest, downloadFile } from "../../actions.js";
 
 import React from "react";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     //border: "solid 2px red",
     //paddingTop: "10px",
@@ -46,6 +47,7 @@ const LINKED_IMAGE_CONTENT = 3;
 const LINK_CONTENT = 4;
 const VIDEO_CONTENT = 5;
 const HEADLINE_CONTENT = 6;
+const DOWNLOAD_CONTENT = 7;
 
 class ContentDisplayer extends React.Component {
   constructor(props) {
@@ -73,12 +75,14 @@ class ContentDisplayer extends React.Component {
       if (value.ContentTypeID === VIDEO_CONTENT) re = this.renderVideo(index);
       if (value.ContentTypeID === HEADLINE_CONTENT)
         re = this.renderHeadline(index);
+      if (value.ContentTypeID === DOWNLOAD_CONTENT)
+        re = this.renderDownload(index);
       return <React.Fragment key={index}> {re}</React.Fragment>;
     });
   };
 
   /**rendert ein Text ContentElement */
-  renderText = index => {
+  renderText = (index) => {
     return (
       <React.Fragment key={index}>
         <span style={{ whiteSpace: "pre-wrap" }}>
@@ -89,7 +93,7 @@ class ContentDisplayer extends React.Component {
   };
 
   /**render ein Bild ContentElement  */
-  renderBild = index => {
+  renderBild = (index) => {
     const renderCaption = () => {
       if (this.state.contentBody[index].content === "") {
         return null;
@@ -154,7 +158,7 @@ class ContentDisplayer extends React.Component {
   };
 
   /**rendert ein Link Element */
-  renderLink = index => {
+  renderLink = (index) => {
     return (
       <React.Fragment key={index}>
         {this.state.contentBody[index].paragraph ? (
@@ -198,7 +202,7 @@ class ContentDisplayer extends React.Component {
   renderVideo = (value, index) => {};
 
   /**rendert ein Text ContentElement */
-  renderHeadline = index => {
+  renderHeadline = (index) => {
     return (
       <React.Fragment key={index}>
         <Typography paragraph variant="h4" style={{ whiteSpace: "pre-wrap" }}>
@@ -208,9 +212,61 @@ class ContentDisplayer extends React.Component {
     );
   };
 
+  renderDownload = (index) => {
+    return (
+      <React.Fragment key={index}>
+        {this.state.contentBody[index].fileParagraph ? (
+          <div
+            style={{
+              margin: "10px 0px",
+              display: "block",
+              textAlign: "center",
+              textAlignLast: "center"
+            }}
+          >
+            <Link
+              color="primary"
+              style={{ margin: "auto" }}
+              onClick={() => {
+                downloadFile(
+                  this.props.user,
+                  this.state.contentBody[index].fileID
+                );
+              }}
+            >
+              <GetAppIcon />
+              {this.state.contentBody[index].fileDisplayed.toUpperCase()}
+            </Link>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "inline-block",
+              textAlign: "center",
+              textAlignLast: "center"
+            }}
+          >
+            <Link
+              color="primary"
+              onClick={() => {
+                downloadFile(
+                  this.props.user,
+                  this.state.contentBody[index].fileID
+                );
+              }}
+            >
+              <GetAppIcon style={{ fontSize: "1rem" }} />
+              {this.state.contentBody[index].fileDisplayed}
+            </Link>
+          </div>
+        )}
+      </React.Fragment>
+    );
+  };
+
   /**loads and redners the Component */
   render() {
-    const { classes, theme } = this.props;
+    const { classes } = this.props;
     if (this.state.loadingError) {
       return (
         <Typography style={{ textAlign: "center" }} color="error" variant="h3">
@@ -251,7 +307,7 @@ class ContentDisplayer extends React.Component {
         "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getContentBody.php",
         this.props.user,
         this.state.contentHead,
-        response => {
+        (response) => {
           if (response.data.success) {
             this.setState({
               contentBody: response.data.contentBody
