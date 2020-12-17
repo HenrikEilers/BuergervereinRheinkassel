@@ -1,9 +1,14 @@
+body,
+html,
+#root,
 .App {
-  /**font-family: "Karla", sans-serif;*/
+  margin: 0px;
+  height: 100%;
   word-wrap: break-word;
+}
+.App {
   text-align: center;
 }
-
 .wrapper {
   padding: 10% 0%;
 }
@@ -29,7 +34,4 @@
   height: 200px;
   border-color: rgb(55, 0, 255);
   border-style: solid;
-}
-.App {
-  text-align: center;
 }

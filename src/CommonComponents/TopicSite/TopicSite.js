@@ -1,25 +1,13 @@
-import "react-app-polyfill/ie9";
 import React from "react";
-import { withStyles } from "@material-ui/core";
-import axios from "axios";
+import { Grid, Typography, withStyles } from "@material-ui/core";
+import { GetApp } from "@material-ui/icons";
 
-const styles = theme => ({
-  wrapper: {
-    [theme.breakpoints.up("xs")]: {
-      width: "306px",
-      margin: "64px auto"
-    },
-    [theme.breakpoints.up("sm")]: {
-      width: "575px",
-      margin: "70px auto"
-    },
-    [theme.breakpoints.up("md")]: {
-      width: "810px"
-    },
-    [theme.breakpoints.up("lg")]: {
-      width: "1080px"
-    }
-  }
+import { Link } from "react-router-dom";
+
+import { downloadDatenschutz } from "../../actions.js";
+
+const styles = (theme) => ({
+  footer: { position: "relative", height: "100%", border: "solid 2px red" }
 });
 
 class TopicSite extends React.Component {
@@ -30,10 +18,34 @@ class TopicSite extends React.Component {
     };
   }
 
-  render() {
-    const { classes } = this.props;
+  downloadDatenschutz = () => {
+    downloadDatenschutz(this.props.user);
+  };
 
-    return <div className={classes.wrapper}>1</div>;
+  render() {
+    return (
+      <footer>
+        <Grid container alignItems="center" justify="space-evenly">
+          <Grid item>
+            <Link to="/impressum">
+              <Typography>Impressum</Typography>
+            </Link>
+          </Grid>
+          <Grid item>
+            <Typography
+              display="inline"
+              paragraph
+              onClick={() => {
+                this.downloadDatenschutz();
+              }}
+            >
+              <GetApp style={{ fontSize: "1rem" }} />
+              <span style={{ marginBottom: "2px" }}>Datenschutzerklärung</span>
+            </Typography>
+          </Grid>
+        </Grid>
+      </footer>
+    );
   }
 }
 
