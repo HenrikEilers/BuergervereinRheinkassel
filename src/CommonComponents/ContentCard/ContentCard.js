@@ -1,42 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import AddIcon from "@material-ui/icons/Add";
-import Clear from "@material-ui/icons/Clear";
+
 import Folder from "@material-ui/icons/Folder";
-import { CircularProgress } from "@material-ui/core";
 
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
-import InboxIcon from "@material-ui/icons/Inbox";
-import DraftsIcon from "@material-ui/icons/Drafts";
 import ContentBox from "./ContentBox";
-import { postRequest } from "../../actions.js";
 
 import {
+  Typography,
+  CircularProgress,
   Dialog,
-  Button,
-  IconButton,
-  Fab,
-  Zoom,
-  Collapse,
-  Card,
-  CardActionArea,
-  CardMedia,
-  CardContent,
-  CardActions,
-  ButtonBase,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
   withTheme
 } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     [theme.breakpoints.up("xs")]: {
       width: "306px",
@@ -120,10 +102,10 @@ class ContentCard extends React.Component {
     });
   };
 
-  renderContentList = content => {
+  renderContentList = (content) => {
     if (content) {
       return content
-        .filter(value => {
+        .filter((value) => {
           if (this.state.choosenGroupIndex === -1) {
             return true;
           }
@@ -221,7 +203,6 @@ class ContentCard extends React.Component {
 
   //render methode
   render() {
-    const { classes, content } = this.props;
     return (
       <React.Fragment>
         <ContentBox

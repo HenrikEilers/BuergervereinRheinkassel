@@ -10,15 +10,14 @@ import { Card, ButtonBase, Collapse } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import AddIcon from "@material-ui/icons/AddOutlined";
 
-import { Route, Link, withRouter } from "react-router-dom";
-import axios from "axios";
+import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import React from "react";
 
 import Feed from "../../../CommonComponents/Feed/Feed";
 import ContentCard from "../../../CommonComponents/ContentCard/ContentCard";
 
-const styles = theme => ({
+const styles = (theme) => ({
   wrapper: {
     //border:"solid 2px red",
     [theme.breakpoints.up("xs")]: {
@@ -75,7 +74,7 @@ class Feedmanagement extends React.Component {
   };
 
   FeedReady = () => {
-    const tmp = this.props.offlineContent.find(data => data.ContentID === -1);
+    const tmp = this.props.offlineContent.find((data) => data.ContentID === -1);
     if (tmp) {
       return false;
     } else {
@@ -86,9 +85,9 @@ class Feedmanagement extends React.Component {
   render() {
     const { classes } = this.props;
 
-    const feedContent = memberView => {
+    const feedContent = (memberView) => {
       if (memberView === false) {
-        return this.props.offlineFeed.filter(value => {
+        return this.props.offlineFeed.filter((value) => {
           return value.rank === 0;
         });
       } else {
@@ -175,7 +174,7 @@ class Feedmanagement extends React.Component {
             this.props.offlineFeed ? (
               <Feed
                 offlineData={feedContent(this.state.memberView)}
-                feedAction={tmpContentHead => {}}
+                feedAction={(tmpContentHead) => {}}
               />
             ) : (
               <CircularProgress className={classes.progress} />

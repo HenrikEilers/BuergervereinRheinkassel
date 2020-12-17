@@ -1,15 +1,13 @@
 import React from "react";
-import Card from "@material-ui/core/Card";
 import "../../styles.css";
 import Zoom from "@material-ui/core/Zoom";
 import Collapse from "@material-ui/core/Collapse";
 
 import Typography from "@material-ui/core/Typography";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
-import { withStyles, withTheme, ButtonBase, Fade } from "@material-ui/core";
+import { withStyles, withTheme } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   box: {
     border: "solid 0px red",
     height: "100%",
@@ -220,7 +218,7 @@ class Box extends React.Component {
     };
   }
 
-  test1 = event => {
+  test1 = (event) => {
     const t = event.nativeEvent.sourceCapabilities.firesTouchEvents;
     if (t) {
       if (this.state.hoverTouch) {
@@ -313,7 +311,7 @@ class Box extends React.Component {
                 }
               }
             }}
-            onMouseEnter={event => {
+            onMouseEnter={(event) => {
               if (!this.state.hover) {
                 this.setState({ hover: true });
               }
@@ -361,107 +359,6 @@ class Box extends React.Component {
             </div>
           </div>
         </Zoom>
-      </React.Fragment>
-    );
-
-    return (
-      <React.Fragment>
-        <ClickAwayListener
-          mouseEvent="onMouseUp"
-          onClickAway={() => {
-            this.setState({ hover: false });
-          }}
-        >
-          <Zoom in={this.state.picLoaded}>
-            <Card raised={this.state.hover} className={classes.innerbox} square>
-              {/**<CardMedia src={imgcontent} className={classes.img1} /> */}
-              <img
-                onLoad={() => {
-                  this.setState({ picLoaded: true });
-                }}
-                alt={name}
-                src={imgcontent}
-                title="bild"
-                style={{
-                  textAlign: "center",
-                  position: "absolute",
-                  top: 0,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: "auto",
-                  height: "100%",
-                  overflow: "hidden",
-                  verticalAlign: "middle"
-                }}
-
-                //style={this.state.hover ? { filter: "blur(5px)" } : {}}
-              />
-              {/**<div className={hoverClick}> </div> */}
-
-              <div
-                className={classes.hover_click}
-                onMouseLeave={() => {
-                  this.setState({
-                    hover: false,
-                    buttonBaseActive: false
-                  });
-                }}
-                onMouseEnter={() => this.setState({ hover: true })}
-                onTouchEnd={event => {
-                  this.setState({
-                    hover: true
-                  });
-                }}
-              >
-                <Fade
-                  in={this.state.hover}
-                  timeout={{
-                    appear: 300,
-                    enter: 50,
-                    exit: 300
-                  }}
-                  onEntered={() => {
-                    this.setState({ buttonBaseActive: true });
-                  }}
-                >
-                  <ButtonBase
-                    disabled={!this.state.buttonBaseActive}
-                    onClick={() => {
-                      this.props.onClick(data);
-                    }}
-                    className={classes.hover_click}
-                  >
-                    <div className={classes.onHover_click} />
-
-                    <div className={classes.centered}>
-                      <Typography className={classtext()}>{name}</Typography>
-                      {beschreibung !== "" ? (
-                        <Typography
-                          className={beschreibungTextClass()}
-                          variant="body1"
-                        >
-                          {beschreibung}
-                        </Typography>
-                      ) : null}
-                      {date !== "0000-00-00" ? (
-                        <Typography className={classes.date} variant="caption">
-                          {new Date(date).getDate()}/
-                          {new Date(date).getMonth() + 1}/
-                          {new Date(date).getFullYear()}
-                        </Typography>
-                      ) : null}
-                    </div>
-                  </ButtonBase>
-                </Fade>
-              </div>
-              {/**<div
-            className={classes.hover_click}
-            onMouseOut={() => this.setState({ hover: false })}
-            onMouseOver={() => this.setState({ hover: true })}
-          /> */}
-            </Card>
-          </Zoom>
-        </ClickAwayListener>
       </React.Fragment>
     );
   }

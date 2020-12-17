@@ -12,7 +12,7 @@ import Feedmanagement from "./Feedmanagement/Feedmanagement";
 import ContentFolder from "./ContentFolder/ContentFolder";
 import ContentCreator from "./ContentCreator/ContentCreator";
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     //width: "100%",
     //maxWidth: 360,
@@ -48,7 +48,7 @@ class Contentmanager extends React.Component {
       "https://buergerverein-rheilaka.de/phpTest/getFeed.php",
       this.props.user,
       null,
-      response => {
+      (response) => {
         const clone = this.bestCopyEver(response.data.feed);
         this.setState({
           offlineFeed: response.data.feed,
@@ -61,7 +61,7 @@ class Contentmanager extends React.Component {
       "https://buergerverein-rheilaka.de/phpTest/getContentHeads.php",
       this.props.user,
       null,
-      response => {
+      (response) => {
         this.setState({
           content: {
             offlineContent: response.data.content,
@@ -74,12 +74,12 @@ class Contentmanager extends React.Component {
     );
   }
 
-  bestCopyEver = src => {
+  bestCopyEver = (src) => {
     return Object.assign([], src);
   };
 
-  updateContentHeads = newContentHead => {
-    const index = this.state.content.offlineContent.findIndex(value => {
+  updateContentHeads = (newContentHead) => {
+    const index = this.state.content.offlineContent.findIndex((value) => {
       return value.ContentID === newContentHead.ContentID;
     });
     var content1 = null;
@@ -104,7 +104,7 @@ class Contentmanager extends React.Component {
 
   //Fügt das Ausgewählte Thema dem Feed Final hinzu
   addToFeed = () => {
-    const callback = response => {
+    const callback = (response) => {
       if (response.data.success === true) {
         const clone = this.bestCopyEver(this.state.offlineFeedTMP);
         this.setState({
@@ -135,7 +135,7 @@ class Contentmanager extends React.Component {
 
   //Fügt das Ausgewählte Thema dem Content Final hinzu
   //TODO PHP backend muss erstellt werden + SQL Tabelle
-  addToContent = data => {
+  addToContent = (data) => {
     axios
       .post(
         "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/addToContent.php",
@@ -155,14 +155,14 @@ class Contentmanager extends React.Component {
           }
         }
       )
-      .then(response => {
+      .then((response) => {
         if (response.data.success === true) {
           //Success aus geben
         } else {
           //Error mit Text ausgeben
         }
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   anythingChangedFeed = () => {
@@ -183,7 +183,7 @@ class Contentmanager extends React.Component {
   };
 
   FeedReady = () => {
-    const tmp = this.state.offlineFeedTMP.find(data => data.ContentID === -1);
+    const tmp = this.state.offlineFeedTMP.find((data) => data.ContentID === -1);
     if (tmp) {
       return false;
     } else {
@@ -191,7 +191,7 @@ class Contentmanager extends React.Component {
     }
   };
 
-  setFeedCorrect = tmp => {
+  setFeedCorrect = (tmp) => {
     return tmp.map((value, index) => {
       value = {
         ...value,
@@ -201,7 +201,7 @@ class Contentmanager extends React.Component {
     });
   };
 
-  addToTMPFeed = index => {
+  addToTMPFeed = (index) => {
     const fillerContent = {
       name: "Was soll eingefügt werden",
       beschreibung: "wähle aus",
@@ -227,7 +227,7 @@ class Contentmanager extends React.Component {
     return;
   };
 
-  deleteFromTMPFeed = index => {
+  deleteFromTMPFeed = (index) => {
     let tmp = this.state.offlineFeedTMP;
     tmp.splice(index - 1, 1);
     tmp = tmp.map((value, index1) => {
@@ -269,7 +269,7 @@ class Contentmanager extends React.Component {
     return;
   };
 
-  handleSearchChange = event => {
+  handleSearchChange = (event) => {
     const searchedContent =
       event.target.value !== ""
         ? this.state.content.sortedOfflineContent.filter((value, index) => {
@@ -318,14 +318,14 @@ class Contentmanager extends React.Component {
     });
   };
 
-  handleFolderChange = groupID => {
-    const gruppe = this.state.offlineGroup.find(value => {
+  handleFolderChange = (groupID) => {
+    const gruppe = this.state.offlineGroup.find((value) => {
       return groupID === value.GroupID;
     });
     const gruppenmitglieder = gruppe.gruppenmitglieder;
 
     const choosenContent = gruppenmitglieder.map((value1, index) => {
-      return this.state.content.offlineContent.find(value => {
+      return this.state.content.offlineContent.find((value) => {
         return value1 === value.ContentID;
       });
     });
@@ -379,8 +379,7 @@ class Contentmanager extends React.Component {
           }
         }
       )
-      .then(response => {
-        console.log(response.data);
+      .then((response) => {
         if (response.data.success === true) {
           this.setState({
             offlineGroup: response.data.data
@@ -395,7 +394,7 @@ class Contentmanager extends React.Component {
         }
         return response.data.success;
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   deleteGroup = (GroupID, callback) => {
@@ -418,7 +417,7 @@ class Contentmanager extends React.Component {
           }
         }
       )
-      .then(response => {
+      .then((response) => {
         if (response.data.success === true) {
           this.setState({
             offlineGroup: response.data.data
@@ -433,7 +432,7 @@ class Contentmanager extends React.Component {
         }
         callback(response);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   //render methode
@@ -481,10 +480,10 @@ class Contentmanager extends React.Component {
                 addToContent={this.addToContent}
                 editGroup={this.editGroup}
                 deleteGroup={this.deleteGroup}
-                setIndex={index => {
+                setIndex={(index) => {
                   this.setState({ chooseToEditIndex: index });
                 }}
-                updateContentHeads={content => {
+                updateContentHeads={(content) => {
                   this.setState({
                     content: {
                       offlineContent: content,
@@ -515,12 +514,14 @@ class Contentmanager extends React.Component {
                   return -1;
                 }
 
-                const t = this.state.content.offlineContent.findIndex(value => {
-                  return (
-                    this.props.location.pathname ===
-                    "/contentmanager/content_creator/" + value.name
-                  );
-                });
+                const t = this.state.content.offlineContent.findIndex(
+                  (value) => {
+                    return (
+                      this.props.location.pathname ===
+                      "/contentmanager/content_creator/" + value.name
+                    );
+                  }
+                );
                 if (t !== -1) {
                   return t;
                 } else {

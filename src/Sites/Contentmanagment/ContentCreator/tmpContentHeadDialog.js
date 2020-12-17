@@ -14,10 +14,6 @@ import {
   FormControl,
   InputLabel,
   FormHelperText,
-  ButtonBase,
-  Card,
-  Typography,
-  InputAdornment,
   CircularProgress,
   List,
   ListSubheader,
@@ -25,10 +21,6 @@ import {
   ListItem,
   Checkbox
 } from "@material-ui/core";
-
-import Search from "@material-ui/icons/Search";
-
-import PublishIcon from "@material-ui/icons/Publish";
 
 import DateFnsUtils from "@date-io/date-fns";
 import {
@@ -44,11 +36,9 @@ import PicturePicker from "../../../CommonComponents/PicturePicker/PicturePicker
 
 import Box from "../../../CommonComponents/Feed/Box";
 
-//import { postRequest, postUploadPicture } from "../actions.js";
-
 import React from "react";
 
-const styles = theme => ({
+const styles = (theme) => ({
   display: {
     [theme.breakpoints.only("xs")]: {
       display: "none"
@@ -107,7 +97,7 @@ class tmpContentHeadDialog extends React.Component {
   };
 
   /**erstellt Kopie von Objekten */
-  bestCopyEver = src => {
+  bestCopyEver = (src) => {
     return JSON.parse(JSON.stringify(src));
   };
 
@@ -215,15 +205,13 @@ class tmpContentHeadDialog extends React.Component {
 
   //render methode
   render() {
-    const { classes } = this.props;
-
     return (
       <Dialog
         scroll="body"
         maxWidth="sm"
         fullWidth
         open={this.props.open}
-        onEnter={event => {
+        onEnter={(event) => {
           this.setState({
             tmpContentHead: this.props.contentHead
           });
@@ -251,11 +239,9 @@ class tmpContentHeadDialog extends React.Component {
 
   /**rendert die Bildauswahl für das Feed Element des ContentHeads */
   renderPicturePick = () => {
-    const { classes } = this.props;
-
     return (
       <PicturePicker
-        getPicture={picture => {
+        getPicture={(picture) => {
           this.setState({
             tmpContentHead: {
               ...this.state.tmpContentHead,
@@ -298,7 +284,7 @@ class tmpContentHeadDialog extends React.Component {
               <Select
                 style={{ width: "100%" }}
                 value={this.state.displaySize}
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({ displaySize: event.target.value });
                 }}
                 inputProps={{
@@ -338,7 +324,7 @@ class tmpContentHeadDialog extends React.Component {
                 style={{ width: "100%" }}
                 //autoWidth
                 value={this.state.first}
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({ first: event.target.value });
                 }}
                 inputProps={{
@@ -384,7 +370,7 @@ class tmpContentHeadDialog extends React.Component {
                 first={this.state.first}
                 data={this.state.tmpContentHead}
                 size={this.state.displaySize}
-                onClick={tmpContentHead => {}}
+                onClick={(tmpContentHead) => {}}
               />
             </div>
           </Grid>
@@ -426,7 +412,7 @@ class tmpContentHeadDialog extends React.Component {
           variant="outlined"
           label="Überschrift"
           value={this.state.tmpContentHead.name}
-          onChange={event => {
+          onChange={(event) => {
             this.setState({
               tmpContentHead: {
                 ...this.state.tmpContentHead,
@@ -441,7 +427,7 @@ class tmpContentHeadDialog extends React.Component {
           variant="outlined"
           label="Beschriftung"
           value={this.state.tmpContentHead.beschreibung}
-          onChange={event => {
+          onChange={(event) => {
             this.setState({
               tmpContentHead: {
                 ...this.state.tmpContentHead,
@@ -516,7 +502,7 @@ class tmpContentHeadDialog extends React.Component {
           <Select
             style={{ width: "100%" }}
             value={this.state.tmpContentHead.rank}
-            onChange={event => {
+            onChange={(event) => {
               this.setState({
                 tmpContentHead: {
                   ...this.state.tmpContentHead,
@@ -574,7 +560,7 @@ class tmpContentHeadDialog extends React.Component {
                   choosenContentGroups:
                     this.state.choosenContentGroups.length !==
                     this.state.contentGroups.length
-                      ? this.state.contentGroups.map(value => {
+                      ? this.state.contentGroups.map((value) => {
                           return value.GroupID;
                         })
                       : []
@@ -598,7 +584,7 @@ class tmpContentHeadDialog extends React.Component {
                     checked={this.state.choosenContentGroups.includes(
                       value.GroupID
                     )}
-                    onChange={event => {
+                    onChange={(event) => {
                       if (event.target.checked) {
                         this.setState({
                           choosenContentGroups: this.state.choosenContentGroups
@@ -608,7 +594,7 @@ class tmpContentHeadDialog extends React.Component {
                       } else {
                         this.setState({
                           choosenContentGroups: this.state.choosenContentGroups.filter(
-                            value1 => {
+                            (value1) => {
                               return value1 !== value.GroupID;
                             }
                           )
@@ -627,9 +613,8 @@ class tmpContentHeadDialog extends React.Component {
         "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/ContentGroup/getGroups.php",
         this.props.user,
         { ContentID: this.props.contentHead.ContentID },
-        response => {
+        (response) => {
           if (response.data.success) {
-            console.log(response.data);
             response.data.groupsOfContent.sort();
             this.setState({
               contentGroups: response.data.groups,

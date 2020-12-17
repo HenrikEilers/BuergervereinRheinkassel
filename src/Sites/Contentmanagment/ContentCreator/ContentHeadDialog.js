@@ -46,7 +46,7 @@ import Box from "../../../CommonComponents/Feed/Box";
 
 import React from "react";
 
-const styles = theme => ({
+const styles = (theme) => ({
   display: {
     [theme.breakpoints.only("xs")]: {
       display: "none"
@@ -92,7 +92,7 @@ class ContentHeadDialog extends React.Component {
   }
 
   /**erstellt Kopie von Objekten */
-  bestCopyEver = src => {
+  bestCopyEver = (src) => {
     return JSON.parse(JSON.stringify(src));
   };
 
@@ -100,7 +100,6 @@ class ContentHeadDialog extends React.Component {
    * sich verändert hat und gib wahrheits wert zurück
    */
   hasToSave = () => {
-    console.log("test");
     if (this.state.choosePicture !== 0) {
       return false;
     }
@@ -173,7 +172,7 @@ class ContentHeadDialog extends React.Component {
         maxWidth="sm"
         fullWidth
         open={this.props.open}
-        onEnter={event => {
+        onEnter={(event) => {
           this.setState({
             tmpContentHead: this.props.contentHead
           });
@@ -246,11 +245,11 @@ class ContentHeadDialog extends React.Component {
         user={this.props.user}
         pictureList={this.state.pictureList}
         pictureGroups={this.state.pictureGroups}
-        backUpGroups={Groups => {
+        backUpGroups={(Groups) => {
           this.setState({ pictureGroups: Groups });
         }}
         pickedGroup={this.state.choosenPictureGroup}
-        handleGroupPick={value => {
+        handleGroupPick={(value) => {
           this.setState({ choosenPictureGroup: value, choosePicture: 1 });
         }}
       />
@@ -261,7 +260,7 @@ class ContentHeadDialog extends React.Component {
   renderChoosePicture = () => {
     const { classes } = this.props;
 
-    const pictureChoosen = index => {
+    const pictureChoosen = (index) => {
       this.setState({
         tmpContentHead: {
           ...this.state.tmpContentHead,
@@ -284,7 +283,7 @@ class ContentHeadDialog extends React.Component {
               (this.state.choosenPictureGroup === null ||
                 -1 !==
                   this.state.choosenPictureGroup.gruppenmitglieder.findIndex(
-                    value1 => {
+                    (value1) => {
                       return value.pictureID === value1;
                     }
                   ))
@@ -360,7 +359,7 @@ class ContentHeadDialog extends React.Component {
             variant="outlined"
             style={{ marginBottom: 10 }}
             value={this.state.imgSearch}
-            onChange={event => {
+            onChange={(event) => {
               this.setState({ imgSearch: event.target.value });
             }}
             InputProps={{
@@ -384,7 +383,7 @@ class ContentHeadDialog extends React.Component {
         "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/getPictures.php",
         this.props.user,
         "!",
-        response => {
+        (response) => {
           if (response.data.success) {
             this.setState({
               pictureList: response.data.pictures
@@ -429,7 +428,7 @@ class ContentHeadDialog extends React.Component {
               <Select
                 style={{ width: "100%" }}
                 value={this.state.displaySize}
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({ displaySize: event.target.value });
                 }}
                 inputProps={{
@@ -469,7 +468,7 @@ class ContentHeadDialog extends React.Component {
                 style={{ width: "100%" }}
                 //autoWidth
                 value={this.state.first}
-                onChange={event => {
+                onChange={(event) => {
                   this.setState({ first: event.target.value });
                 }}
                 inputProps={{
@@ -515,7 +514,7 @@ class ContentHeadDialog extends React.Component {
                 first={this.state.first}
                 data={this.state.tmpContentHead}
                 size={this.state.displaySize}
-                onClick={tmpContentHead => {}}
+                onClick={(tmpContentHead) => {}}
               />
             </div>
           </Grid>
@@ -558,7 +557,7 @@ class ContentHeadDialog extends React.Component {
           variant="outlined"
           label="Überschrift"
           value={this.state.tmpContentHead.name}
-          onChange={event => {
+          onChange={(event) => {
             this.setState({
               tmpContentHead: {
                 ...this.state.tmpContentHead,
@@ -573,7 +572,7 @@ class ContentHeadDialog extends React.Component {
           variant="outlined"
           label="Beschriftung"
           value={this.state.tmpContentHead.beschreibung}
-          onChange={event => {
+          onChange={(event) => {
             this.setState({
               tmpContentHead: {
                 ...this.state.tmpContentHead,
@@ -648,7 +647,7 @@ class ContentHeadDialog extends React.Component {
           <Select
             style={{ width: "100%" }}
             value={this.state.tmpContentHead.rank}
-            onChange={event => {
+            onChange={(event) => {
               this.setState({
                 tmpContentHead: {
                   ...this.state.tmpContentHead,
@@ -706,7 +705,7 @@ class ContentHeadDialog extends React.Component {
                   choosenContentGroups:
                     this.state.choosenContentGroups.length !==
                     this.state.contentGroups.length
-                      ? this.state.contentGroups.map(value => {
+                      ? this.state.contentGroups.map((value) => {
                           return value.GroupID;
                         })
                       : []
@@ -730,7 +729,7 @@ class ContentHeadDialog extends React.Component {
                     checked={this.state.choosenContentGroups.includes(
                       value.GroupID
                     )}
-                    onChange={event => {
+                    onChange={(event) => {
                       if (event.target.checked) {
                         this.setState({
                           choosenContentGroups: this.state.choosenContentGroups
@@ -740,7 +739,7 @@ class ContentHeadDialog extends React.Component {
                       } else {
                         this.setState({
                           choosenContentGroups: this.state.choosenContentGroups.filter(
-                            value1 => {
+                            (value1) => {
                               return value1 !== value.GroupID;
                             }
                           )
@@ -759,7 +758,7 @@ class ContentHeadDialog extends React.Component {
         "https://www.buergerverein-rheindoerfer.de/phpTest/ContentManagerSet/ContentGroup/getGroups.php",
         this.props.user,
         { ContentID: this.props.contentHead.ContentID },
-        response => {
+        (response) => {
           if (response.data.success) {
             response.data.groupsOfContent.sort();
             this.setState({

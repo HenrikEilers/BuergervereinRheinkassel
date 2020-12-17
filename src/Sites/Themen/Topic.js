@@ -8,11 +8,11 @@ import {
 
 import ContentDisplayer from "../../CommonComponents/ContentDisplayer/ContentDisplayer";
 
-import { Route, Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 import { postRequest } from "../../actions.js";
 
-const styles = theme => ({});
+const styles = (theme) => ({});
 
 class Topic extends React.Component {
   constructor(props) {
@@ -25,7 +25,7 @@ class Topic extends React.Component {
   }
   //Läd Content
   loadContent = () => {
-    const callback = response => {
+    const callback = (response) => {
       if (response.data.success) {
         this.setState({
           contentHead: response.data.ContentHead,

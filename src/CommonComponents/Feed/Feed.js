@@ -3,11 +3,9 @@ import Grid from "@material-ui/core/Grid";
 import { withStyles, CircularProgress } from "@material-ui/core";
 import Box from "./Box";
 
-import axios from "axios";
-
 import { getRequestwithAu } from "../../actions.js";
 
-const styles = theme => ({
+const styles = (theme) => ({
   App: {
     "font-family": "sans-serif",
     "text-align": "center"
@@ -102,7 +100,7 @@ class Feed extends React.Component {
   }
 
   getFeedData = () => {
-    const callback = reponse => {
+    const callback = (reponse) => {
       this.setState({ data: reponse.data.feed });
     };
     getRequestwithAu(
@@ -128,7 +126,9 @@ class Feed extends React.Component {
           >
             <Box
               data={current}
-              onClick={tmpContentHead => this.props.feedAction(tmpContentHead)}
+              onClick={(tmpContentHead) =>
+                this.props.feedAction(tmpContentHead)
+              }
             />
           </Grid>
         );
@@ -170,7 +170,7 @@ class Feed extends React.Component {
                 <Box
                   first
                   data={this.state.data[0]}
-                  onClick={tmpContentHead =>
+                  onClick={(tmpContentHead) =>
                     this.props.feedAction(tmpContentHead)
                   }
                 />
@@ -189,7 +189,7 @@ class Feed extends React.Component {
               >
                 <Box
                   data={this.state.data[1]}
-                  onClick={tmpContentHead =>
+                  onClick={(tmpContentHead) =>
                     this.props.feedAction(tmpContentHead)
                   }
                 />
@@ -205,7 +205,7 @@ class Feed extends React.Component {
                 >
                   <Box
                     data={this.state.data[2]}
-                    onClick={tmpContentHead =>
+                    onClick={(tmpContentHead) =>
                       this.props.feedAction(tmpContentHead)
                     }
                   />
@@ -225,7 +225,7 @@ class Feed extends React.Component {
               >
                 <Box
                   data={this.state.data[3]}
-                  onClick={tmpContentHead =>
+                  onClick={(tmpContentHead) =>
                     this.props.feedAction(tmpContentHead)
                   }
                 />
@@ -241,7 +241,7 @@ class Feed extends React.Component {
                 >
                   <Box
                     data={this.state.data[4]}
-                    onClick={tmpContentHead =>
+                    onClick={(tmpContentHead) =>
                       this.props.feedAction(tmpContentHead)
                     }
                   />
