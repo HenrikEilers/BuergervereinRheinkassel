@@ -296,7 +296,7 @@ class Appdrawer extends React.Component {
               render={() => <Contentmanager user={this.state.user} />}
             />
             <Route
-              path="/bugreport/"
+              path="/abstimmungen/"
               render={() => <Poll user={this.state.user} />}
             />
             <Route
