@@ -18,7 +18,7 @@ import { withRouter } from "react-router-dom";
 
 import axios from "axios";
 
-const styles = theme => ({
+const styles = (theme) => ({
   loginCard: {
     width: "90%",
     margin: "75px auto",
@@ -51,19 +51,19 @@ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "henrik.eilers@online.de",
-      password: "test@new",
+      email: "",
+      password: "",
       error: false,
       showPassword: false
     };
   }
 
-  handleChange = prop => event => {
+  handleChange = (prop) => (event) => {
     this.setState({ [prop]: event.target.value });
   };
 
   handleClickShowPassword = () => {
-    this.setState(state => ({ showPassword: !state.showPassword }));
+    this.setState((state) => ({ showPassword: !state.showPassword }));
   };
 
   tryLogin = () => {
@@ -84,7 +84,7 @@ class Login extends React.Component {
           }
         }
       )
-      .then(response => {
+      .then((response) => {
         if (response.data.success === true) {
           this.props.setCredentials(
             this.state.email,
@@ -95,18 +95,23 @@ class Login extends React.Component {
             this.props.changePW();
             this.props.history.push("/settings");
           } else {
-            this.props.history.goBack();
+            //if(this.props.history)
+            console.log(this.props); //TODO
+            if (this.props.directAccess) {
+              this.props.history.push("/");
+              this.props.cancleDirectAccess();
+            } else {
+              this.props.history.goBack();
+            }
           }
         } else {
           this.setState({ error: true });
         }
-        //this.setState({ data1: response.data });
       })
-      .catch(err => console.log(err));
-    return false;
+      .catch((err) => console.log(err));
   };
 
-  enterPressed = event => {
+  enterPressed = (event) => {
     if (event.charCode === 13) {
       //13 is the enter keycode
       this.tryLogin();
@@ -124,7 +129,7 @@ class Login extends React.Component {
               <InputLabel htmlFor="adornment-password">Email</InputLabel>
               <Input
                 id="email"
-                type="text"
+                type="email"
                 value={this.state.email}
                 onChange={this.handleChange("email")}
               />
